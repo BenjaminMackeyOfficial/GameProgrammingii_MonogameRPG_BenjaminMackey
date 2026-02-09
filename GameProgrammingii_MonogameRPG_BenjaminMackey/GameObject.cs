@@ -167,15 +167,16 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _renderDistance = renderDist; 
         }
     }
+    
     //renderers
     public class SpriteRenderer : Component
     {
-        public int _serveImage { get; private set;  }
+        public int _serveImage { get; protected set;  }
         public Texture2D _spriteSheet { get; private set; }
 
         public RenderFrom _renderFrom;
+        protected Vector2[] _spritePositions;
 
-        private Vector2 _spritesOnSheet;
         public enum RenderFrom
         {
             Centre, Top, Bottom, Left, Right
@@ -183,22 +184,23 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public SpriteRenderer(Texture2D spriteSheet, Vector2 numOfSpritesWidthAndHeight, RenderFrom rendFrom)
         {
             _spriteSheet = spriteSheet;
-            _spritesOnSheet = numOfSpritesWidthAndHeight;
+
             _renderFrom = rendFrom;
 
             //BUILDING the sprite sheet into an array of cordinates
-            int baseSizeX = _spriteSheet.Width / (int)_spritesOnSheet.x;
-            int baseSizeY = _spriteSheet.Height / (int)_spritesOnSheet.y;
+            int baseSizeX = _spriteSheet.Width / (int)numOfSpritesWidthAndHeight.x;
+            int baseSizeY = _spriteSheet.Height / (int)numOfSpritesWidthAndHeight.y;
 
             List<Vector2> tempCords = new List<Vector2>();
-            for (int i = 0; i < _spritesOnSheet.x; i++)
+            for (int i = 0; i < numOfSpritesWidthAndHeight.x; i++)
             {
-                for (int j = 0; j < _spritesOnSheet.y; j++)
+                for (int j = 0; j < numOfSpritesWidthAndHeight.y; j++)
                 {
                     tempCords.Add(new Vector2(baseSizeX * i, baseSizeY * j));
                 }
             }
-
+            if (tempCords.Count != 0) _serveImage = 0;
+            _spritePositions = tempCords.ToArray();
         }
         
     }
@@ -211,7 +213,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
         public AnimatedTrackSpriteRenderer(Texture2D spriteSheet, Vector2 spriteSizeOnSheet, RenderFrom rendFrom) : base (spriteSheet, spriteSizeOnSheet, rendFrom)
         {
-
+            _FPS = 0;
+            _framesSinceLastSpriteChange = 0;
         }
         public void Update()
         {
@@ -220,12 +223,21 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     }
     public class VariableSpriteRenderer : SpriteRenderer, Updatable
     {
+
+        public VariableSpriteRenderer(Texture2D spriteSheet, Vector2 spriteSizeOnSheet, RenderFrom rendFrom) : base(spriteSheet, spriteSizeOnSheet, rendFrom)
+        {
+            
+        }
+        public void ChangeSprite(int num)
+        {
+            if (num > _spritePositions.Length - 1) return;
+            _serveImage = num;
+        }
         public void Update()
         {
 
         }
     }
-
     //---------
     //=================================================================================================
 

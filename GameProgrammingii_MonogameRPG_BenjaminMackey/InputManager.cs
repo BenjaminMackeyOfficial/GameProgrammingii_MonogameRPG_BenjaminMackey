@@ -41,10 +41,41 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         
         }
     }
+
+    public class Vector2InputMap : Updatable
+    {
+        public Vector2 _vecOut { get; protected set; }
+        public ButtonAction _right;
+        public ButtonAction _up;
+        public ButtonAction _down;
+        public ButtonAction _left;
+        public JoystickAction _joyStick; //will come back to
+        public Vector2InputMap(ButtonAction up, ButtonAction down, ButtonAction right, ButtonAction left)
+        {
+            if(up != null) _up = up;
+            if(down != null) _down = down;
+            if(right != null) _right = right;
+            if(left != null) _left = left;
+        }
+        public virtual void Update()
+        {
+            Vector2 tmp = new Vector2(0,0);
+            if (_right._isHeld) tmp.x += 1;
+            if (_down._isHeld) tmp.y -= 1;
+            if (_left._isHeld) tmp.x -= 1;
+            if(_up._isHeld) tmp.y += 1;
+
+            //for when i add joystick control
+            tmp.y = tmp.y.Clamp(-1, 1);
+            tmp.x = tmp.x.Clamp(-1, 1);
+            //-----------------------------
+
+            _vecOut = tmp;
+        }
+    }
     //=============================================
 
     //subclasses===============================
-
     public class ButtonAction : InputAction
     {
         public event EventHandler ButtonPressed;

@@ -40,6 +40,13 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
             // TODO: Add your update logic here
 
+            //update player input
+            //Run all update methods for gameobjects in the world
+            //
+
+
+            //
+
             base.Update(gameTime);
         }
 
