@@ -1,0 +1,5 @@
+﻿RENDERING:
+	- Set up actual game class for objects to sit in 
+	- Tie sprites to the renderer game component
+	- get a picture to the screen to move around in world view according to its cordinates
+	- add optimisation to only render things the camera can see (beyond just render distance)

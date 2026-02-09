@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 {
@@ -166,6 +167,66 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _renderDistance = renderDist; 
         }
     }
+    //renderers
+    public class SpriteRenderer : Component
+    {
+        public int _serveImage { get; private set;  }
+        public Texture2D _spriteSheet { get; private set; }
+
+        public RenderFrom _renderFrom;
+
+        private Vector2 _spritesOnSheet;
+        public enum RenderFrom
+        {
+            Centre, Top, Bottom, Left, Right
+        }
+        public SpriteRenderer(Texture2D spriteSheet, Vector2 numOfSpritesWidthAndHeight, RenderFrom rendFrom)
+        {
+            _spriteSheet = spriteSheet;
+            _spritesOnSheet = numOfSpritesWidthAndHeight;
+            _renderFrom = rendFrom;
+
+            //BUILDING the sprite sheet into an array of cordinates
+            int baseSizeX = _spriteSheet.Width / (int)_spritesOnSheet.x;
+            int baseSizeY = _spriteSheet.Height / (int)_spritesOnSheet.y;
+
+            List<Vector2> tempCords = new List<Vector2>();
+            for (int i = 0; i < _spritesOnSheet.x; i++)
+            {
+                for (int j = 0; j < _spritesOnSheet.y; j++)
+                {
+                    tempCords.Add(new Vector2(baseSizeX * i, baseSizeY * j));
+                }
+            }
+
+        }
+        
+    }
+
+    public class AnimatedTrackSpriteRenderer : SpriteRenderer, Updatable
+    {
+        public int _FPS;
+        public int _framesSinceLastSpriteChange;
+
+
+        public AnimatedTrackSpriteRenderer(Texture2D spriteSheet, Vector2 spriteSizeOnSheet, RenderFrom rendFrom) : base (spriteSheet, spriteSizeOnSheet, rendFrom)
+        {
+
+        }
+        public void Update()
+        {
+
+        }
+    }
+    public class VariableSpriteRenderer : SpriteRenderer, Updatable
+    {
+        public void Update()
+        {
+
+        }
+    }
+
+    //---------
     //=================================================================================================
 
 }
