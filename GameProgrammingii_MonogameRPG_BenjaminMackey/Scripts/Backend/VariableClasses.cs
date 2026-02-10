@@ -59,6 +59,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             return (x * x + z * z + y * y) / (x * x + z * z + y * y);
         }
+        
 
         public static Vector3 operator  +(Vector3 left, Vector3 right)
         {
@@ -84,9 +85,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     }
     public struct Vector2
     {
-        public float x;
-        public float y;
-        public Vector2(int x, int y)
+        public double x;
+        public double y;
+        public Vector2(double x, double y)
         {
             this.x = x;
             this.y = y;
@@ -98,8 +99,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     //behold, vector one
     public struct Vector1
     {
-        public float x;
-        public Vector1(int x)
+        public double x;
+        public Vector1(double x)
         {
             this.x = x;
         }

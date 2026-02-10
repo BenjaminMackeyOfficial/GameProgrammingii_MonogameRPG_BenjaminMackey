@@ -44,8 +44,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
     public class Vector2InputMap : Updatable
     {
-        public float x { get; private set; }
-        public float y { get; private set; }
+        public double x { get; private set; }
+        public double y { get; private set; }
 
         public ButtonAction _right;
         public ButtonAction _up;

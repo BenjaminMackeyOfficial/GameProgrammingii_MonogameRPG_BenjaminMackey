@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GameProgrammingii_MonogameRPG_BenjaminMackey.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace GameProgrammingii_MonogameRPG_BenjaminMackey
@@ -19,7 +21,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public GameObject()
         {
             _components = new List<Component>();
-            _transform = new Transform(new Vector2(0,0), 0);
+            _transform = new Transform(new Vector3(0,0,0), new Vector3(0,0,0), new Vector3(1,1,1));
+            ObjectManager.AddToWorld(this);
         }
         public void AddComponent(Component component)
         {
@@ -45,7 +48,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             }
             return (T)component;
         }
-        private void UpdateAndRead()
+        public void UpdateAndRead()
         {
 
         }
@@ -57,8 +60,12 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     public static class ObjectManager
     {
         public static int _index = 0;
-        public static GameObject[] _gameObjects;
-
+        public static List<GameObject> _gameObjects;
+        public static void AddToWorld(GameObject obj)
+        {
+     
+            if(!_gameObjects.Contains(obj)) _gameObjects.Add(obj);      
+        }
         public static bool RequestAdd(GameObject gameObj, Component component)
         {
             if(component.GetType() == typeof(Transform))
@@ -75,6 +82,18 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _index++;
 
             return data;
+        }
+        public static void UpdateAllGameObjects()
+        {
+            for (int i = 0; i < _gameObjects.Count; i++)
+            {
+                _gameObjects[i].UpdateAndRead();
+            }
+        }
+        
+        public static void UpdateSingleGameObject(GameObject obj)
+        {
+            obj.UpdateAndRead();
         }
     }
     //----------------------------------------------------------
@@ -99,10 +118,12 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     {
         public Vector3 _position;
         public Vector3 _rotation;
-        public Transform(Vector3 pos, Vector3 rotation) :base() 
+        public Vector3 _scale;
+        public Transform(Vector3 pos, Vector3 rotation, Vector3 scale) :base() 
         {
             _position = pos;
             _rotation = rotation;
+            _scale = scale;
         }
     }
 
@@ -149,6 +170,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     {
         public float _fieldOfView;
         public float _renderDistance;
+        public float _3dDepth;
 
         public Camera(float fov, float renderDist) : base() 
         {
@@ -168,7 +190,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public bool _faceTheCameraX = true; // most likley will never do anything?
         public bool _faceTheCameraY = true; // same here
 
-        protected Vector2[] _spritePositions;
+        protected Rectangle[] _spritePositions;
 
         public enum RenderFrom
         {
@@ -177,19 +199,19 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public SpriteRenderer(Texture2D spriteSheet, Vector2 numOfSpritesWidthAndHeight, RenderFrom rendFrom)
         {
             _spriteSheet = spriteSheet;
-
             _renderFrom = rendFrom;
+           
 
             //BUILDING the sprite sheet into an array of cordinates
             int baseSizeX = _spriteSheet.Width / (int)numOfSpritesWidthAndHeight.x;
             int baseSizeY = _spriteSheet.Height / (int)numOfSpritesWidthAndHeight.y;
 
-            List<Vector2> tempCords = new List<Vector2>();
+            List<Rectangle> tempCords = new List<Rectangle>();
             for (int i = 0; i < numOfSpritesWidthAndHeight.x; i++)
             {
                 for (int j = 0; j < numOfSpritesWidthAndHeight.y; j++)
                 {
-                    tempCords.Add(new Vector2(baseSizeX * i, baseSizeY * j));
+                    tempCords.Add(new Rectangle(baseSizeX * i, baseSizeY * j, baseSizeX, baseSizeY));
                 }
             }
             if (tempCords.Count != 0) _serveImage = 0;

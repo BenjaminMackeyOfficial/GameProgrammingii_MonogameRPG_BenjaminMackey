@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace GameProgrammingii_MonogameRPG_BenjaminMackey
@@ -19,6 +20,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            
         }
 
         protected override void Initialize()
@@ -26,6 +29,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             // TODO: Add your initialization logic here
             effect = new BasicEffect(GraphicsDevice);
             base.Initialize();
+
+            //game object manager and stuff
+            ObjectManager._gameObjects = new List<GameObject>();
+            //Input Manager and stuff
+
+            //Rendering controller and stuff
+
+            
         }
 
         protected override void LoadContent()
@@ -43,9 +54,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             // TODO: Add your update logic here
 
             //update player input
+            InputManager.updateAll();
             //Run all update methods for gameobjects in the world
-            //
-
+            ObjectManager.UpdateAllGameObjects();
+            //Update renders
+            RenderController.BuildNextRenderTable();
 
             //
 
@@ -56,17 +69,19 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            
+            if (RenderController._camera == null) return;
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.000f, RenderController._camera._renderDistance);
-           
-            //ALL RENDERING=====================================================================
-            
 
-            
+            SpriteEffects spriteEffects = new SpriteEffects();
+            //ALL RENDERING=====================================================================
+            foreach (RenderObjectData item in RenderController._renderObjects)
+            {
+                _spriteBatch.Draw(item._texture, item._position, item._cutOut, Color.White, (float)item._rotation, new Microsoft.Xna.Framework.Vector2(0, 0), item._scale, spriteEffects, 0.1f);
+            }
             //=====================================================================================
             _spriteBatch.End();
-            Debug.WriteLine("h");
+ 
             base.Draw(gameTime);
         }
     }
