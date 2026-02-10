@@ -20,5 +20,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             if (num < min) return min;
             return num;
         }
+        public static double Clamp(this double num, double min, double max)
+        {
+            if (num > max) return max;
+            if (num < min) return min;
+            return num;
+        }
     }
 }

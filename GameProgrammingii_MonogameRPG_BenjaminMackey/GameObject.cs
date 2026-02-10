@@ -97,9 +97,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
     public class Transform : Component
     {
-        public Vector2 _position;
-        public int _rotation;
-        public Transform(Vector2 pos, int rotation) :base() 
+        public Vector3 _position;
+        public Vector3 _rotation;
+        public Transform(Vector3 pos, Vector3 rotation) :base() 
         {
             _position = pos;
             _rotation = rotation;
@@ -128,6 +128,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
     }
 
+    /*
     public class TransformController : Component, Updatable
     {
         private Vector2InputMap _inputMap;
@@ -143,7 +144,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         
     }
-
+    */
     public class Camera : Component
     {
         public float _fieldOfView;
@@ -164,7 +165,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public RenderFrom _renderFrom;
         public bool _enabled = true;
 
-        public bool _faceTheCameraX = true; // i do not know if i will be able to pull full 3d scaling off (or atleast a similar effect)
+        public bool _faceTheCameraX = true; // most likley will never do anything?
         public bool _faceTheCameraY = true; // same here
 
         protected Vector2[] _spritePositions;
