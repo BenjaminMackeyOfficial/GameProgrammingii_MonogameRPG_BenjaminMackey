@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GameProgrammingii_MonogameRPG_BenjaminMackey.Content;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -10,8 +11,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
+        private BasicEffect effect;
         Texture2D texture;
+        
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -22,7 +24,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            effect = new BasicEffect(GraphicsDevice);
             base.Initialize();
         }
 
@@ -56,10 +58,12 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
             
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.000f, RenderController._camera._renderDistance);
+           
             //ALL RENDERING=====================================================================
-            _spriteBatch.Draw(texture, new Rectangle(100,100,100,100), Color.White);
+            
 
-
+            
             //=====================================================================================
             _spriteBatch.End();
             Debug.WriteLine("h");

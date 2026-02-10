@@ -44,7 +44,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
     public class Vector2InputMap : Updatable
     {
-        public Vector2 _vecOut { get; protected set; }
+        public float x { get; private set; }
+        public float y { get; private set; }
+
         public ButtonAction _right;
         public ButtonAction _up;
         public ButtonAction _down;
@@ -70,7 +72,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             tmp.x = tmp.x.Clamp(-1, 1);
             //-----------------------------
 
-            _vecOut = tmp;
+            x = tmp.x;
+            y = tmp.y;  
         }
     }
     //=============================================

@@ -21,7 +21,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _components = new List<Component>();
             _transform = new Transform(new Vector2(0,0), 0);
         }
-        public void Add(Component component)
+        public void AddComponent(Component component)
         {
             if(!ObjectManager.RequestAdd(this, component))
             {
@@ -32,7 +32,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _components.Add(component);
         }
 
-        public Component GetComponent<T>() where T : Component
+        public T GetComponent<T>() where T : Component
         {
             Component component = null;
             foreach(Component comp in _components)
@@ -43,8 +43,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                     break;
                 }
             }
-
-            return component;
+            return (T)component;
         }
         private void UpdateAndRead()
         {
@@ -131,27 +130,16 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
     public class TransformController : Component, Updatable
     {
-        private Vector2 toMove;
-        public ButtonAction _right;
-        public ButtonAction _up;
-        public ButtonAction _down;
-        public ButtonAction _left;
+        private Vector2InputMap _inputMap;
 
-        public TransformController() : base()
+        public TransformController(Vector2InputMap inputMap) : base()
         {
-            
+            _inputMap = inputMap;
         }
-
-        private void up(EventArgs args)
-        {
-            
-        }
-
         public void Update()
         {
-            _parent._transform._position.x += toMove.x;
-            _parent._transform._position.y += toMove.y;
-            toMove = new Vector2(0, 0);
+            _parent._transform._position.x += _inputMap.y;
+            _parent._transform._position.y += _inputMap.x;
         }
         
     }
@@ -173,8 +161,12 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     {
         public int _serveImage { get; protected set;  }
         public Texture2D _spriteSheet { get; private set; }
-
         public RenderFrom _renderFrom;
+        public bool _enabled = true;
+
+        public bool _faceTheCameraX = true; // i do not know if i will be able to pull full 3d scaling off (or atleast a similar effect)
+        public bool _faceTheCameraY = true; // same here
+
         protected Vector2[] _spritePositions;
 
         public enum RenderFrom
@@ -208,7 +200,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     public class AnimatedTrackSpriteRenderer : SpriteRenderer, Updatable
     {
         public int _FPS;
-        public int _framesSinceLastSpriteChange;
+        public int _framesSinceLastSpriteChange { get; set; }
 
 
         public AnimatedTrackSpriteRenderer(Texture2D spriteSheet, Vector2 spriteSizeOnSheet, RenderFrom rendFrom) : base (spriteSheet, spriteSizeOnSheet, rendFrom)
@@ -218,7 +210,12 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public void Update()
         {
-
+            _framesSinceLastSpriteChange++;
+            if(_framesSinceLastSpriteChange >= _FPS)
+            {
+                if (_serveImage >= _spritePositions.Length - 1) _serveImage = 0;
+                else _serveImage++;
+            }
         }
     }
     public class VariableSpriteRenderer : SpriteRenderer, Updatable
