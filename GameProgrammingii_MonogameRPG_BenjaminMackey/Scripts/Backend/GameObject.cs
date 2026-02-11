@@ -60,10 +60,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     public static class ObjectManager
     {
         public static int _index = 0;
-        public static List<GameObject> _gameObjects;
+        public static List<GameObject> _gameObjects = new List<GameObject>();
         public static void AddToWorld(GameObject obj)
         {
-     
+
             if(!_gameObjects.Contains(obj)) _gameObjects.Add(obj);      
         }
         public static bool RequestAdd(GameObject gameObj, Component component)
@@ -175,7 +175,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public Camera(float fov, float renderDist) : base() 
         {
             _fieldOfView = fov;
-            _renderDistance = renderDist; 
+            _renderDistance = renderDist;
+
+            _3dDepth = 1;
         }
     }
     
@@ -190,7 +192,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public bool _faceTheCameraX = true; // most likley will never do anything?
         public bool _faceTheCameraY = true; // same here
 
-        protected Rectangle[] _spritePositions;
+        public Microsoft.Xna.Framework.Rectangle[] _spritePositions;
 
         public enum RenderFrom
         {
@@ -198,6 +200,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public SpriteRenderer(Texture2D spriteSheet, Vector2 numOfSpritesWidthAndHeight, RenderFrom rendFrom)
         {
+            
             _spriteSheet = spriteSheet;
             _renderFrom = rendFrom;
            
@@ -206,12 +209,12 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             int baseSizeX = _spriteSheet.Width / (int)numOfSpritesWidthAndHeight.x;
             int baseSizeY = _spriteSheet.Height / (int)numOfSpritesWidthAndHeight.y;
 
-            List<Rectangle> tempCords = new List<Rectangle>();
+            List<Microsoft.Xna.Framework.Rectangle> tempCords = new List<Microsoft.Xna.Framework.Rectangle>();
             for (int i = 0; i < numOfSpritesWidthAndHeight.x; i++)
             {
                 for (int j = 0; j < numOfSpritesWidthAndHeight.y; j++)
                 {
-                    tempCords.Add(new Rectangle(baseSizeX * i, baseSizeY * j, baseSizeX, baseSizeY));
+                    tempCords.Add(new Microsoft.Xna.Framework.Rectangle(baseSizeX * i, baseSizeY * j, baseSizeX, baseSizeY));
                 }
             }
             if (tempCords.Count != 0) _serveImage = 0;
