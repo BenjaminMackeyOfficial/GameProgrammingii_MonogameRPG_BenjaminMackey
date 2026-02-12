@@ -30,21 +30,21 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             //making a square--
             GameObject square = new GameObject();
 
-            SpriteRenderer sprite = new SpriteRenderer(SpriteBin.GetSprite("blackSquare"), new Vector2(1,1), SpriteRenderer.RenderFrom.Centre);
+            SpriteRenderer sprite = new SpriteRenderer(SpriteBin.GetSprite("blueSquare"), new Vector2(1,1), SpriteRenderer.RenderFrom.Centre);
 
             square.AddComponent(sprite);
 
-            square._transform._position = new Vector3(0, 0, 10);
-            //-----------------
+            square._transform._position = new Vector3(0, 10, 10);
+            /*-----------------
 
             GameObject squareTwo = new GameObject();
 
-            SpriteRenderer spriteTwo = new SpriteRenderer(SpriteBin.GetSprite("blackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
+            SpriteRenderer spriteTwo = new SpriteRenderer(SpriteBin.GetSprite("solidBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
 
             squareTwo.AddComponent(spriteTwo);
 
             squareTwo._transform._position = new Vector3(0, 0, 5);
-
+            */
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,9 +17,13 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
         public static Transform _cameraTransform { get; set; }
         public static WorldRenderingData _renderingData { get; private set; }
         public static RenderObjectData[] _renderObjects { get; private set; }
-        public static void UpdateRenderVariables()//this doesnt happen in BuildNextRenderTable for efficiency
+        public static void UpdateRenderVariables(GraphicsDeviceManager graphicsDeviceManager)//this doesnt happen in BuildNextRenderTable for efficiency
         {
-
+            _renderingData = new WorldRenderingData(graphicsDeviceManager, 1000, 1000);
+            _renderingData._graphicsDeviceManager.PreferredBackBufferWidth = 1000;
+            _renderingData._graphicsDeviceManager.PreferredBackBufferHeight = 1000;
+            _renderingData._graphicsDeviceManager.ApplyChanges();
+            _renderingData.ChangeHorizonLine(0.5f);
         }
         public static void BuildNextRenderTable()
         {
@@ -65,33 +70,30 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
 
                 //drawing to screen (very important)
 
-
-                
-
                 if ((float)adjustedWorldPos.z <= 0.001f)
                     continue;
 
-                float perspective = _camera._3dDepth / (float)adjustedWorldPos.z;
+                float textureSizeBalance = (
+                    (_renderingData._height * _renderingData._width)/
+                    (drawObj._texture.Height * drawObj._texture.Width) 
+                    );
+                float perspective = (_camera._3dDepth / (float)adjustedWorldPos.z) * textureSizeBalance;
 
 
-                Microsoft.Xna.Framework.Vector2 screenPos = new Microsoft.Xna.Framework.Vector2(
+                drawObj._position = new Microsoft.Xna.Framework.Vector2(
                     _renderingData._width * 0.5f + (float)adjustedWorldPos.x * perspective,
-                    (float)(_renderingData._height * _renderingData._horizonLine) - (float)adjustedWorldPos.y * perspective
+                    (float)((float)_renderingData._height * _renderingData._horizonLine) - (float)adjustedWorldPos.y * perspective
                 );
 
-                Microsoft.Xna.Framework.Vector2 screenScale = new Microsoft.Xna.Framework.Vector2(
+                drawObj._scale  = new Microsoft.Xna.Framework.Vector2(
                     (float)item._transform._scale.x * perspective,
                     (float)item._transform._scale.y * perspective
                 );
-
-                drawObj._position = screenPos;
-                drawObj._scale = screenScale;
-
                 //
 
-                drawObj._position = new Microsoft.Xna.Framework.Vector2(400, 300);
+                //drawObj._position = new Microsoft.Xna.Framework.Vector2(400, 300);
                 //drawObj._scale = new Microsoft.Xna.Framework.Vector2(1, 1);
-                Debug.WriteLine(drawObj._scale);
+                Debug.WriteLine(_renderingData._horizonLine);
 
                 drawObj._rotation = 0f;//_cameraTransform._rotation.z; //this wont work, will re-visit when i meet the project requirments and have time :peace_sign:
                 renderObjects.Add( drawObj );
@@ -104,6 +106,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
     }
     public struct RenderObjectData
     {
+ 
         public Texture2D _texture;
         public Microsoft.Xna.Framework.Vector2 _scale;
         public Microsoft.Xna.Framework.Vector2 _position;
@@ -112,13 +115,20 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
     }
     public struct WorldRenderingData
     {
-        public double _horizonLine; //from -1 to 1, 1 being looking straight up, and -1 being looking straight down (not reccomended, would look wonky, try keep between 0.3, and 0.7)
+        public GraphicsDeviceManager _graphicsDeviceManager;
+        public float _horizonLine { get; private set; } //from -1 to 1, 1 being looking straight up, and -1 being looking straight down (not reccomended, would look wonky, try keep between 0.3, and 0.7)
         public int _horizonLinePixelCount;
         public int _height { get; private set; }
         public int _width { get; private set; }
-        public void ChangeHorizonLine(double num)
+        public WorldRenderingData(GraphicsDeviceManager graphicsDeviceManager, int h, int w)
         {
-            _horizonLine = num.Clamp(0, 1);
+            _graphicsDeviceManager = graphicsDeviceManager;
+            _height = h;
+            _width = w;
+        }
+        public void ChangeHorizonLine(float num)
+        {
+            _horizonLine = num.Clamp(0f, 1f);
             //_horizonLinePixelCount = (int)(_height * num); something to do with field of view
         }
 

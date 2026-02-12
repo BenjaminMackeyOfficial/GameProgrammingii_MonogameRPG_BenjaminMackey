@@ -36,6 +36,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             //Input Manager and stuff
 
             //Rendering controller and stuff
+            RenderController.UpdateRenderVariables(_graphics);
 
             TechDemoTests test = new TechDemoTests();
             test.testMethod();
@@ -46,10 +47,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             //texture = Content.Load<Texture2D>("blackSquare");
             // TODO: use this.Content to load your game content here
-            SpriteBin.Add(Content.Load<Texture2D>("blackSquare"), "blackSquare");
+            SpriteBin.Add(Content.Load<Texture2D>("solidBlackSquare"), "solidBlackSquare");
+            SpriteBin.Add(Content.Load<Texture2D>("blueSquare"), "blueSquare");
 
             //--
-            
+
         }
         private bool temp = true;
         protected override void Update(GameTime gameTime)
