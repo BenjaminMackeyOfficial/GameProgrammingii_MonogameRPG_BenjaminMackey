@@ -22,7 +22,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public GameObject()
         {
             _components = new List<Component>();
-            _transform = new Transform(new Vector3(0,0,0), new Vector3(0,0,0), new Vector3(1,1,1));
+            _transform = new Transform(new Vector3(0,0,0), new Vector3(0,0,0), new Vector3(10,10,10));
             ObjectManager.AddToWorld(this);
         }
         public void AddComponent(Component component)
@@ -127,6 +127,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public Vector3 _position;
         public Vector3 _rotation;
         public Vector3 _scale;
+        public float _linearVelocity = 0;
         public Transform(Vector3 pos, Vector3 rotation, Vector3 scale) :base() 
         {
             _position = pos;

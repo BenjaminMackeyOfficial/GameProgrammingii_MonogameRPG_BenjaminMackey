@@ -82,7 +82,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
             if (RenderController._camera == null) return;
             _spriteBatch.Begin(SpriteSortMode.FrontToBack, samplerState: SamplerState.PointClamp);
-            //effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.001f, RenderController._camera._renderDistance);
+            effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.001f, RenderController._camera._renderDistance);
 
             SpriteEffects spriteEffects = new SpriteEffects();
             //ALL RENDERING=====================================================================

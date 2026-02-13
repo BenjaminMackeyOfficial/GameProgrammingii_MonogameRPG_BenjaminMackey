@@ -37,7 +37,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
 
             //adjusting for new camera movments
            // double camAngleToHorLine = (_cameraTransform._rotation.x / 90) * 0.5;
-            _renderingData.ChangeHorizonLine((float)(_cameraTransform._rotation.x + 90) / 180);//change eventually for 3d
+            _renderingData.ChangeHorizonLine(0.5f);//change eventually for 3d
                                                                                                //
                                                                                                //vision cone variables----
 
@@ -53,6 +53,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
 
                 adjustedWorldPos = Vector3.RotatePositionAroundWorldPoint(adjustedWorldPos, Vector3.Zero(), -_cameraTransform._rotation); // spinning adjusted for the camera
 
+
                 //checking if the camera can see the sprite
                 //if (adjustedWorldPos.Magnitude() > _camera._renderDistance || adjustedWorldPos.z < 0) continue;
 
@@ -66,8 +67,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
                 //drawing to screen (very important)
 
                 float textureSizeBalance = (
+                    (
                     (_renderingData._height * _renderingData._width) /
                     (drawObj._texture.Height * drawObj._texture.Width)
+                    )/100f
                     );
 
                 float perspective = (float)(_camera._3dDepth / adjustedWorldPos.z); // * textureSizeBalance;
@@ -78,16 +81,23 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
                     _renderingData._width * 0.5f + (float)adjustedWorldPos.x * perspective,
                     (float)((float)_renderingData._height * _renderingData._horizonLine) - (float)adjustedWorldPos.y * perspective
                 );
+                /*in the attempt to fake combat edge of screen size
+                float scaleDownSizeX = 1 / Math.Abs(drawObj._position.X - (_renderingData._width / 2f));
+                float scaleDownSizeY = 1 / Math.Abs(drawObj._position.Y - (_renderingData._height / 2f));
+                scaleDownSizeX = (float)Math.Sin((float)scaleDownSizeX);
+                scaleDownSizeY = (float)Math.Sin((float)scaleDownSizeY);
 
+               */
                 drawObj._scale = new Microsoft.Xna.Framework.Vector2(
-                    (float)item._transform._scale.x * perspective,
-                    (float)item._transform._scale.y * perspective
+                    (((float)item._transform._scale.x + (float)item._transform._scale.z) / 2) * perspective * textureSizeBalance ,//* scaleDownSizeX,
+                    ((float)item._transform._scale.y )* perspective * textureSizeBalance //* scaleDownSizeY
                 );
 
                 drawObj._dist = 1 / (float)adjustedWorldPos.z;
                 //-----
 
-                Debug.WriteLine(adjustedWorldPos.Magnitude() + " " + adjustedWorldPos.z);
+                //Debug.WriteLine(adjustedWorldPos.Magnitude() + " " + adjustedWorldPos.z);
+                //Debug.WriteLine(scaleDownSizeX + " " + scaleDownSizeY);
                 drawObj._rotation = 0f;//_cameraTransform._rotation.z; //this wont work, will re-visit when i meet the project requirments and have time :peace_sign:
                 renderObjects.Add( drawObj );
                 
