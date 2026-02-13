@@ -1,4 +1,7 @@
-﻿using System;
+﻿using GameProgrammingii_MonogameRPG_BenjaminMackey.Content;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -6,8 +9,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GameProgrammingii_MonogameRPG_BenjaminMackey.Content;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 {
@@ -50,7 +51,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public void UpdateAndRead()
         {
-
+            
+            foreach (Component item in _components)
+            {
+                if(item is Updatable)//thank you stack overflow user Robert C. Barth! what a shorthand
+                {
+                    (item as Updatable).Update(); // this makes things so easy bruh what, thanks robert 
+                }
+            }
         }
     }
 
@@ -106,7 +114,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     {
         public int _id { get; private set; }
         public GameObject _parent;
-
+       
         public Component()
         {
             int[] data = ObjectManager.RequestBuildInfo();
@@ -124,6 +132,35 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _position = pos;
             _rotation = rotation;
             _scale = scale;
+        }
+        public Vector3 Forward() 
+        {
+            double radX = _rotation.x * Math.PI / 180.0;
+            double radY = _rotation.y * Math.PI / 180.0;
+            return new Vector3(
+                Math.Cos(radX) * Math.Cos(radY),
+                Math.Sin(radX),
+                Math.Cos(radX) * Math.Sin(radY)
+                );
+        }
+        public Vector3 Right() //is flat
+        {
+            double radY = _rotation.y * Math.PI / 180.0;
+            return new Vector3(
+                -Math.Sin(radY),
+                0,
+                Math.Cos(radY)
+            );
+        }
+        public Vector3 Up()
+        {
+            double radX = _rotation.x * Math.PI / 180.0;
+            double radY = _rotation.y * Math.PI / 180.0;
+            return new Vector3(
+                Math.Sin(radX) * Math.Cos(radY),
+                Math.Cos(radX),
+                Math.Sin(radX) * Math.Sin(radY)
+                );
         }
     }
 
@@ -149,23 +186,37 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
     }
 
-    /*
+    
     public class TransformController : Component, Updatable
     {
-        private Vector2InputMap _inputMap;
+        private Vector2InputMap _moveInputMap;
+        private Vector2InputMap _rotationInputMap;
+        public float _speed = 1.0f;
 
-        public TransformController(Vector2InputMap inputMap) : base()
+        public TransformController(Vector2InputMap inputMap, Vector2InputMap vector2InputMap, float speed) : base()
         {
-            _inputMap = inputMap;
+            _moveInputMap = inputMap;
+            _rotationInputMap = vector2InputMap;
+            this._speed = speed;
         }
         public void Update()
         {
-            _parent._transform._position.x += _inputMap.y;
-            _parent._transform._position.y += _inputMap.x;
+            Vector3 forward = _parent._transform.Forward();
+            Vector3 right = _parent._transform.Right();
+            
+            _parent._transform._position.x += (_moveInputMap.y * forward.z) * _speed;
+            _parent._transform._position.z += (_moveInputMap.y * forward.x) * _speed;
+
+            _parent._transform._position.x += (_moveInputMap.x * right.z) * _speed;
+            _parent._transform._position.z += (_moveInputMap.x * right.x) * _speed;
+
+            _parent._transform._rotation.x += -_rotationInputMap.y;
+            _parent._transform._rotation.y += (_rotationInputMap.x);
+
+            //Debug.WriteLine(_parent._transform.Forward().x + " " + _parent._transform.Forward().y + " " + _parent._transform.Forward().z);
         }
-        
     }
-    */
+
     public class Camera : Component
     {
         public float _fieldOfView;
@@ -177,7 +228,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _fieldOfView = fov;
             _renderDistance = renderDist;
 
-            _3dDepth = 1;
+            _3dDepth = (float)((RenderController._renderingData._width / 2f));
         }
     }
     

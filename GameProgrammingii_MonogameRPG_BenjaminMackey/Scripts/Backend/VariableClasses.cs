@@ -30,6 +30,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             this.y = y; 
             this.z = z;
         }
+
         public static Vector3 RotatePositionAroundWorldPoint(Vector3 startPos, Vector3 worldPoint, Vector3 rotation) // used for POSITION VECTOR 3S
         {
             Vector3 vec = startPos;
@@ -73,17 +74,20 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public double Magnitude()
         {
-            return (x * x + z * z + y * y) / (x * x + z * z + y * y);
+            return Math.Sqrt(x * x + y * y + z * z);
         }
-        
+        public static double Dot(Vector3 left, Vector3 right)
+        {
+            return left.x * right.x + left.y * right.y + left.z * right.z;
+        }
 
         public static Vector3 operator  +(Vector3 left, Vector3 right)
         {
-            return new Vector3(left.x + right.x, left.y + right.x, left.z + right.z);
+            return new Vector3(left.x + right.x, left.y + right.y, left.z + right.z);
         }
         public static Vector3 operator -(Vector3 left, Vector3 right)
         {
-            return new Vector3(left.x - right.x, left.y - right.x, left.z - right.z);
+            return new Vector3(left.x - right.x, left.y - right.y, left.z - right.z);
         }
         public static Vector3 operator -(Vector3 left)
         {
@@ -91,11 +95,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public static Vector3 operator *(Vector3 left, Vector3 right)
         {
-            return new Vector3(left.x * right.x, left.y * right.x, left.z * right.z);
+            return new Vector3(left.x * right.x, left.y * right.y, left.z * right.z);
         }
         public static Vector3 operator /(Vector3 left, Vector3 right)
         {
-            return new Vector3(left.x / right.x, left.y / right.x, left.z / right.z);
+            return new Vector3(left.x / right.x, left.y / right.y, left.z / right.z);
         }
         public static Vector3 Zero()
         {
@@ -111,9 +115,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             this.x = x;
             this.y = y;
-
         }
-
     }
 
     //behold, vector one

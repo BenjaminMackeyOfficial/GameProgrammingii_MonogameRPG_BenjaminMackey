@@ -81,8 +81,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             if (RenderController._camera == null) return;
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.001f, RenderController._camera._renderDistance);
+            _spriteBatch.Begin(SpriteSortMode.FrontToBack, samplerState: SamplerState.PointClamp);
+            //effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.001f, RenderController._camera._renderDistance);
 
             SpriteEffects spriteEffects = new SpriteEffects();
             //ALL RENDERING=====================================================================
@@ -96,9 +96,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                         item._cutOut, 
                         Color.White, 
                         (float)item._rotation,
-                        new Microsoft.Xna.Framework.Vector2(item._cutOut.Width / 2f, item._cutOut.Height),
+                        new Microsoft.Xna.Framework.Vector2(item._cutOut.Width / 2f, item._cutOut.Height / 2f), //will change to use the renderFrom enum later
                         item._scale, 
-                        spriteEffects, 0.1f);
+                        spriteEffects, 
+                        item._dist);
+             
                 }
             }
             //=====================================================================================

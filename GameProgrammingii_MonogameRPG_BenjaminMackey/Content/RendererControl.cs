@@ -23,45 +23,40 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
             _renderingData._graphicsDeviceManager.PreferredBackBufferWidth = 1000;
             _renderingData._graphicsDeviceManager.PreferredBackBufferHeight = 1000;
             _renderingData._graphicsDeviceManager.ApplyChanges();
-            _renderingData.ChangeHorizonLine(0.5f);
+            //_renderingData.ChangeHorizonLine(0.5f);
         }
         public static void BuildNextRenderTable()
         {
             if (_camera == null) return;
 
             List<RenderObjectData> renderObjects = new List<RenderObjectData>();
-
-            //individual renderer vars
-            int screenPosX = 0;
-            int screenPosY = 0;
-            int sizeScalar = 0;
-
+           
             Vector3 adjustedWorldPos;
             //-------------------------
 
 
             //adjusting for new camera movments
            // double camAngleToHorLine = (_cameraTransform._rotation.x / 90) * 0.5;
-            _renderingData.ChangeHorizonLine(0.5f);
-            //
-            //vision cone variables----
+            _renderingData.ChangeHorizonLine((float)(_cameraTransform._rotation.x + 90) / 180);//change eventually for 3d
+                                                                                               //
+                                                                                               //vision cone variables----
 
-            
+
             //-------------------------
             foreach (GameObject item in ObjectManager._gameObjects)
             {
                 //checking if gameobject even has a renderer
                 if (item.GetComponent<SpriteRenderer>() == null) continue;
 
-                
-                adjustedWorldPos = item._transform._position - _cameraTransform._position; //moving
-                
-                adjustedWorldPos = Vector3.RotatePositionAroundWorldPoint(adjustedWorldPos, Vector3.Zero(), -_cameraTransform._rotation); // spinning adjusted for the camera
-         
-                //checking if the camera can see the thing
-                if (adjustedWorldPos.Magnitude() > _camera._renderDistance || adjustedWorldPos.z < 0) continue;
 
-                //Debug.WriteLine(adjustedWorldPos.x);
+                adjustedWorldPos = item._transform._position - _cameraTransform._position; //moving
+
+                adjustedWorldPos = Vector3.RotatePositionAroundWorldPoint(adjustedWorldPos, Vector3.Zero(), -_cameraTransform._rotation); // spinning adjusted for the camera
+
+                //checking if the camera can see the sprite
+                //if (adjustedWorldPos.Magnitude() > _camera._renderDistance || adjustedWorldPos.z < 0) continue;
+
+
                 SpriteRenderer spriteRenderer = item.GetComponent<SpriteRenderer>();
                 //the actual placing of sprites
                 RenderObjectData drawObj = new RenderObjectData();
@@ -70,31 +65,29 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
 
                 //drawing to screen (very important)
 
-                if ((float)adjustedWorldPos.z <= 0.001f)
-                    continue;
-
                 float textureSizeBalance = (
-                    (_renderingData._height * _renderingData._width)/
-                    (drawObj._texture.Height * drawObj._texture.Width) 
+                    (_renderingData._height * _renderingData._width) /
+                    (drawObj._texture.Height * drawObj._texture.Width)
                     );
-                float perspective = (_camera._3dDepth / (float)adjustedWorldPos.z) * textureSizeBalance;
 
+                float perspective = (float)(_camera._3dDepth / adjustedWorldPos.z); // * textureSizeBalance;
+                
 
                 drawObj._position = new Microsoft.Xna.Framework.Vector2(
+
                     _renderingData._width * 0.5f + (float)adjustedWorldPos.x * perspective,
                     (float)((float)_renderingData._height * _renderingData._horizonLine) - (float)adjustedWorldPos.y * perspective
                 );
 
-                drawObj._scale  = new Microsoft.Xna.Framework.Vector2(
+                drawObj._scale = new Microsoft.Xna.Framework.Vector2(
                     (float)item._transform._scale.x * perspective,
                     (float)item._transform._scale.y * perspective
                 );
-                //
 
-                //drawObj._position = new Microsoft.Xna.Framework.Vector2(400, 300);
-                //drawObj._scale = new Microsoft.Xna.Framework.Vector2(1, 1);
-                Debug.WriteLine(_renderingData._horizonLine);
+                drawObj._dist = 1 / (float)adjustedWorldPos.z;
+                //-----
 
+                Debug.WriteLine(adjustedWorldPos.Magnitude() + " " + adjustedWorldPos.z);
                 drawObj._rotation = 0f;//_cameraTransform._rotation.z; //this wont work, will re-visit when i meet the project requirments and have time :peace_sign:
                 renderObjects.Add( drawObj );
                 
@@ -112,8 +105,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
         public Microsoft.Xna.Framework.Vector2 _position;
         public float _rotation;
         public Microsoft.Xna.Framework.Rectangle _cutOut;
+        public float _dist;
     }
-    public struct WorldRenderingData
+    public class WorldRenderingData
     {
         public GraphicsDeviceManager _graphicsDeviceManager;
         public float _horizonLine { get; private set; } //from -1 to 1, 1 being looking straight up, and -1 being looking straight down (not reccomended, would look wonky, try keep between 0.3, and 0.7)
@@ -128,6 +122,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
         }
         public void ChangeHorizonLine(float num)
         {
+            
             _horizonLine = num.Clamp(0f, 1f);
             //_horizonLinePixelCount = (int)(_height * num); something to do with field of view
         }
