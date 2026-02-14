@@ -1,4 +1,5 @@
 ﻿using GameProgrammingii_MonogameRPG_BenjaminMackey.Content;
+using GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -25,7 +26,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             _components = new List<Component>();
             _transform = new Transform(new Vector3(0,0,0), new Vector3(0,0,0), new Vector3(10,10,10));
-            _attemptedTransform = _transform;
+            _attemptedTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(10, 10, 10));
             ObjectManager.AddToWorld(this);
         }
         public void AddComponent(Component component)
@@ -37,6 +38,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             }
             component._parent = this;
             _components.Add(component);
+            component.Initialize();
         }
 
         public T GetComponent<T>() where T : Component
@@ -57,7 +59,6 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _attemptedTransform._position = _transform._position;
             _attemptedTransform._rotation = _transform._rotation;
             _attemptedTransform._scale = _transform._scale;
-
             foreach (Component item in _components)
             {
                 if(item is Updatable)//thank you stack overflow user Robert C. Barth! what a shorthand
@@ -65,7 +66,22 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                     (item as Updatable).Update(); // this makes things so easy bruh what, thanks robert 
                 }
             }
-            
+
+            PhysicsSystem.QuePhysicsTransformAdjustment(this, _transform, _attemptedTransform);
+        }
+        public void FlushTransform(Transform setTo)
+        {
+            _transform._position = setTo._position;
+            _transform._rotation = setTo._rotation;
+            _transform._scale = setTo._scale;
+
+            //change to do in physics eventualy
+            setTo._linearVelocity = _transform._linearVelocity;
+            //-------------------------------
+
+
+            _transform._linearVelocity = setTo._linearVelocity;
+
         }
     }
 
@@ -127,6 +143,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             int[] data = ObjectManager.RequestBuildInfo();
             _id = data[0];
         }
+        public virtual void Initialize()
+        {
+
+        }
     }
 
 
@@ -173,18 +193,19 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                 );
         }
 
-        //returns the angle at which theyre overlapping, locked to vector2 so no weird bouncing on road (excludes y)
-        public static bool Overlap(Transform left, Transform right, out Vector3 sendAngle)//will be changed to use sperated axis theorum... pppprrrobably :sweating:
-        {
-            if((left._position - right._position).Magnitude() > left._scale.Magnitude() / 2f + right._scale.Magnitude() / 2f)
-            {
-                Vector3 bounceOffAngle;    
-            }
-            sendAngle = new Vector3(0, 0, 0);
-            return false;
-        }
 
-        
+
+        private static bool CompareCords(float onePos, float oneScale, float twoPos, float twoScale)
+        {
+            float max1 = onePos + oneScale /2f;
+            float min1 = onePos - oneScale /2f;
+
+            float max2 = twoPos + twoScale / 2f;
+            float min2 = twoPos - twoScale / 2f;
+
+            if (!(max2 >= min1 && min2 <= max1))return false;
+            return true;
+        }
         public static Vector3 ReflectOff(Plane plane, Transform init, Transform off) //assumes the other colider is a circle
         {
             float offMin = 0;
@@ -203,6 +224,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                     offMin = (float)off._position.z - (float)off._scale.z / 2f;
                     offMax = (float)off._position.z + (float)off._scale.z / 2f;
                     dinkOffVec = new Vector3(0, 0, 1);
+                    if(!CompareCords((float)init._position.x, (float)init._scale.x, (float)off._position.x, (float)off._scale.x) ||
+                        !CompareCords((float)init._position.y, (float)init._scale.y, (float)off._position.y, (float)off._scale.y)) return new Vector3(99854, 99854, 99854);
                     break;
                 case Plane.yz:
                     localMin = (float)init._position.x - (float)init._scale.x / 2f;
@@ -210,6 +233,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                     offMin = (float)off._position.x - (float)off._scale.x / 2f;
                     offMax = (float)off._position.x + (float)off._scale.x / 2f;
                     dinkOffVec = new Vector3(1, 0, 0);
+                    if (!CompareCords((float)init._position.y, (float)init._scale.y, (float)off._position.y, (float)off._scale.y) ||
+                        !CompareCords((float)init._position.z, (float)init._scale.z, (float)off._position.z, (float)off._scale.z)) return new Vector3(99854, 99854, 99854);
                     break;
                 case Plane.zx:
                     localMin = (float)init._position.y - (float)init._scale.y / 2f;
@@ -217,15 +242,24 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                     offMin = (float)off._position.y - (float)off._scale.y / 2f;
                     offMax = (float)off._position.y + (float)off._scale.y / 2f;
                     dinkOffVec = new Vector3(0, 1, 0);
+                    if (!CompareCords((float)init._position.z, (float)init._scale.z, (float)off._position.z, (float)off._scale.z) ||
+                        !CompareCords((float)init._position.x, (float)init._scale.x, (float)off._position.x, (float)off._scale.x)) return new Vector3(99854, 99854, 99854);
                     break;
             }
+            
+            if (!(offMax >= localMin && offMin <= localMax)) 
+            {
 
-            if (offMax < localMin || offMin < localMax) return Vector3.Zero();
-            if (Math.Abs(localMin - offMax) < Math.Abs(localMax - offMin)) dinkOff = offMax;
-            else dinkOff = offMin;
-            dinkOffVec = dinkOffVec * dinkOff;
+                return new Vector3(99854, 99854, 99854); 
+            }
 
-            return -Vector3.AngleBetween(init._position, init._position + dinkOffVec);
+
+            if (Vector3.Dot(init._position - off._position, dinkOffVec) < 0) dinkOffVec *= -1f;
+            dinkOffVec = Vector3.NormalizeAngle(dinkOffVec);
+
+            Vector3 vel = init._position - off._position;
+            Debug.WriteLine(vel.x);
+            return vel - (dinkOffVec * (float)Vector3.Dot(vel, dinkOffVec));
         }
 
     }
@@ -235,6 +269,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public Vector2 _offSet;
 
         public bool _isTrigger;
+        public bool _static = true;
 
         public event Action<Collider> OnTriggerEnter;
         public Collider(Vector2 offSet, bool isTrigger) :base()
@@ -255,17 +290,23 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     //types of coliders
     public class PlaneColider : Collider
     {
-        private Plane _plane;
+        public Plane _plane { get; private set ;}
         public PlaneColider(Vector2 offSet) : base(offSet)
         {
+            
+        }
+        public override void Initialize()
+        {
+            _plane = Plane.xy;
             double xyScale = _parent._transform._scale.x * _parent._transform._scale.y;
             double yzScale = _parent._transform._scale.y * _parent._transform._scale.z;
             double zxScale = _parent._transform._scale.z * _parent._transform._scale.x;
 
-            if(xyScale > yzScale && xyScale > zxScale) _plane = Plane.xy;
-            if(yzScale > xyScale && yzScale > zxScale) _plane = Plane.yz;
-            if(zxScale > xyScale && zxScale > yzScale) _plane = Plane.yz;
+            if (xyScale > yzScale && xyScale > zxScale) _plane = Plane.xy;
+            if (yzScale > xyScale && yzScale > zxScale) _plane = Plane.yz;
+            if (zxScale > xyScale && zxScale > yzScale) _plane = Plane.yz;
         }
+
         
     }
     //
@@ -288,14 +329,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             Vector3 forward = _parent._transform.Forward();
             Vector3 right = _parent._transform.Right();
             
-            _parent._transform._position.x += (_moveInputMap.y * forward.z) * _speed;
-            _parent._transform._position.z += (_moveInputMap.y * forward.x) * _speed;
+            _parent._attemptedTransform._position.x += (_moveInputMap.y * forward.z) * _speed;
+            _parent._attemptedTransform._position.z += (_moveInputMap.y * forward.x) * _speed;
 
-            _parent._transform._position.x += (_moveInputMap.x * right.z) * _speed;
-            _parent._transform._position.z += (_moveInputMap.x * right.x) * _speed;
+            _parent._attemptedTransform._position.x += (_moveInputMap.x * right.z) * _speed;
+            _parent._attemptedTransform._position.z += (_moveInputMap.x * right.x) * _speed;
 
-            _parent._transform._rotation.x += -_rotationInputMap.y;
-            _parent._transform._rotation.y += (_rotationInputMap.x);
+            _parent._attemptedTransform._rotation.x += -_rotationInputMap.y;
+            _parent._attemptedTransform._rotation.y += (_rotationInputMap.x);
 
             //Debug.WriteLine(_parent._transform.Forward().x + " " + _parent._transform.Forward().y + " " + _parent._transform.Forward().z);
         }

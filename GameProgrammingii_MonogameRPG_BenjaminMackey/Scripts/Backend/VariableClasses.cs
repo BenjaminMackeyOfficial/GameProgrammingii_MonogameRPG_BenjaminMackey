@@ -89,6 +89,36 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             return Math.Sqrt(x * x + y * y + z * z);
         }
+
+        public Vector3 Rad()
+        {
+            return new Vector3(x.Rad(), y.Rad(), z.Rad());
+        }
+
+        public static Vector3 NormalizeAngle(Vector3 ang)
+        {
+            while (ang.x < 0) ang.x += 360;
+            while (ang.x > 360) ang.x -= 360;
+
+            while (ang.y < 0) ang.y += 360;
+            while (ang.y > 360) ang.y -= 360;
+
+            while (ang.z < 0) ang.z += 360;
+            while (ang.z > 360) ang.z -= 360;
+
+            return ang;
+        }
+
+        public static Vector3 Normalize(Vector3 vec)
+        {
+            float divBY = (float)Math.Sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+            if (divBY == 0) return Vector3.Zero();
+            return new Vector3( vec.x / divBY, vec.y / divBY, vec.z / divBY );
+        }
+        public static Vector3 Mirror(Vector3 toMirror, Vector3 mirrorOffOf)
+        {
+            return Vector3.NormalizeAngle((mirrorOffOf * 2f) - toMirror);
+        }
         public static double Dot(Vector3 left, Vector3 right)
         {
             return left.x * right.x + left.y * right.y + left.z * right.z;
@@ -101,6 +131,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public static Vector3 operator -(Vector3 left, Vector3 right)
         {
             return new Vector3(left.x - right.x, left.y - right.y, left.z - right.z);
+        }
+        public static Vector3 operator -(float left, Vector3 right)
+        {
+            return new Vector3(left - right.x, left - right.y, left - right.z);
+        }
+        public static Vector3 operator -(Vector3 left, float right)
+        {
+            return new Vector3(left.x - right, left.y - right, left.z - right);
         }
         public static Vector3 operator -(Vector3 left)
         {
@@ -121,6 +159,15 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public static Vector3 Zero()
         {
             return new Vector3(0, 0, 0);
+        }
+        public static bool operator ==(Vector3 left, Vector3 right)
+        {
+            if (left.x == right.x && left.y == right.y && left.z == right.z) return true;
+            return false;
+        }
+        public static bool operator !=(Vector3 left, Vector3 right)
+        {
+            return !(left == right);
         }
 
         

@@ -70,7 +70,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
                     (
                     (_renderingData._height * _renderingData._width) /
                     (drawObj._texture.Height * drawObj._texture.Width)
-                    )/100f
+                    )/1000f
                     );
 
                 float perspective = (float)(_camera._3dDepth / adjustedWorldPos.z); // * textureSizeBalance;

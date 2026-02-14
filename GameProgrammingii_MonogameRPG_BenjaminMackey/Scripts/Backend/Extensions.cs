@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 {
@@ -42,6 +43,19 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public static float Deg(this float num)
         {
             return (float)(num * 180.0 / Math.PI);
+        }
+
+        public static float NormalizeAngle(this float num)
+        {
+            while (num < 0) num += 360;
+            while (num > 360) num -= 360;
+            return num;
+        }
+        public static float Normalize(this float num)
+        {
+            if (num > 0f) return 1f;
+            if (num < 0f) return -1f;
+            return 0f;
         }
     }
 }

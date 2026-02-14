@@ -18,16 +18,20 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             //making the camera 
             GameObject mainCamera = new GameObject();
             mainCamera._transform._position = new Vector3(0, 0, 0);
+            mainCamera._transform._scale = new Vector3(100, 100, 100);
             mainCamera._name = "TestCam";
             Camera cam = new Camera(40f, 1000f);
-            
+
+            Collider collider = new Collider(new Vector2(0,0), false);
+            collider._static = false;
+            mainCamera.AddComponent(collider);
             mainCamera.AddComponent(cam);
             cam._parent._transform._position = Vector3.Zero();
     
             RenderController._camera = cam;
             RenderController._cameraTransform = mainCamera._transform;
 
-            Debug.WriteLine(RenderController._camera._parent._name);
+            
 
 
 
@@ -48,14 +52,18 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             GameObject squareTwo = new GameObject();
             SpriteRenderer spriteTwo = new SpriteRenderer(SpriteBin.GetSprite("solidBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
             squareTwo.AddComponent(spriteTwo);
-            squareTwo._transform._position = new Vector3(0, 0, 5);
+            squareTwo._transform._position = new Vector3(0, 0, 1500);
+            squareTwo._transform._scale = new Vector3(1000, 1000, 40);
+            PlaneColider p1 = new PlaneColider(new Vector2(0, 0));
+            squareTwo.AddComponent(p1);
 
             GameObject square3 = new GameObject();
             SpriteRenderer sprite3 = new SpriteRenderer(SpriteBin.GetSprite("solidBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
             square3.AddComponent(sprite3);
             square3._transform._position = new Vector3(1000, 0, 3000);
-
-
+            square3._transform._scale = new Vector3(100, 50, 40);
+            PlaneColider p2 = new PlaneColider(new Vector2(0, 0));
+            square3.AddComponent(p2);
 
             ButtonAction fwd = new ButtonAction(ConsoleKey.W);
             ButtonAction bck = new ButtonAction(ConsoleKey.S);

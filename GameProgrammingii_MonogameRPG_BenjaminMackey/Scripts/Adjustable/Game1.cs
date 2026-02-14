@@ -66,6 +66,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             InputManager.updateAll();
             //Run all update methods for gameobjects in the world
             ObjectManager.UpdateAllGameObjects();
+            //Physics
+            PhysicsSystem.FufillPhysicsRequests();
             //Update renders
             RenderController.BuildNextRenderTable();
 
