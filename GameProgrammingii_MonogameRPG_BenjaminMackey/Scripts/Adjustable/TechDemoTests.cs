@@ -57,9 +57,6 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
 
 
-
-
-
             ButtonAction fwd = new ButtonAction(ConsoleKey.W);
             ButtonAction bck = new ButtonAction(ConsoleKey.S);
             ButtonAction lft = new ButtonAction(ConsoleKey.A);

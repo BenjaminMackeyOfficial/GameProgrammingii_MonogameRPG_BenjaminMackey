@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,12 +18,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public string _name;
         public List<Component> _components { get; private set; }
 
+        public Transform _attemptedTransform { get; private set; }
         public Transform _transform { get; private set; } //threw this in cause most game objects are used for world things
 
         public GameObject()
         {
             _components = new List<Component>();
             _transform = new Transform(new Vector3(0,0,0), new Vector3(0,0,0), new Vector3(10,10,10));
+            _attemptedTransform = _transform;
             ObjectManager.AddToWorld(this);
         }
         public void AddComponent(Component component)
@@ -51,7 +54,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public void UpdateAndRead()
         {
-            
+            _attemptedTransform._position = _transform._position;
+            _attemptedTransform._rotation = _transform._rotation;
+            _attemptedTransform._scale = _transform._scale;
+
             foreach (Component item in _components)
             {
                 if(item is Updatable)//thank you stack overflow user Robert C. Barth! what a shorthand
@@ -59,6 +65,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                     (item as Updatable).Update(); // this makes things so easy bruh what, thanks robert 
                 }
             }
+            
         }
     }
 
@@ -122,6 +129,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
     }
 
+
+
     public class Transform : Component
     {
         public Vector3 _position;
@@ -163,29 +172,103 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                 Math.Sin(radX) * Math.Sin(radY)
                 );
         }
+
+        //returns the angle at which theyre overlapping, locked to vector2 so no weird bouncing on road (excludes y)
+        public static bool Overlap(Transform left, Transform right, out Vector3 sendAngle)//will be changed to use sperated axis theorum... pppprrrobably :sweating:
+        {
+            if((left._position - right._position).Magnitude() > left._scale.Magnitude() / 2f + right._scale.Magnitude() / 2f)
+            {
+                Vector3 bounceOffAngle;    
+            }
+            sendAngle = new Vector3(0, 0, 0);
+            return false;
+        }
+
+        
+        public static Vector3 ReflectOff(Plane plane, Transform init, Transform off) //assumes the other colider is a circle
+        {
+            float offMin = 0;
+            float offMax = 0;
+
+            float localMin = 0;
+            float localMax = 0;
+
+            float dinkOff = 0;
+            Vector3 dinkOffVec = new Vector3(0, 0, 0);
+            switch (plane)
+            {
+                case Plane.xy:
+                    localMin = (float)init._position.z - (float)init._scale.z / 2f;
+                    localMax = (float)init._position.z + (float)init._scale.z / 2f;
+                    offMin = (float)off._position.z - (float)off._scale.z / 2f;
+                    offMax = (float)off._position.z + (float)off._scale.z / 2f;
+                    dinkOffVec = new Vector3(0, 0, 1);
+                    break;
+                case Plane.yz:
+                    localMin = (float)init._position.x - (float)init._scale.x / 2f;
+                    localMax = (float)init._position.x + (float)init._scale.x / 2f;
+                    offMin = (float)off._position.x - (float)off._scale.x / 2f;
+                    offMax = (float)off._position.x + (float)off._scale.x / 2f;
+                    dinkOffVec = new Vector3(1, 0, 0);
+                    break;
+                case Plane.zx:
+                    localMin = (float)init._position.y - (float)init._scale.y / 2f;
+                    localMax = (float)init._position.y + (float)init._scale.y / 2f;
+                    offMin = (float)off._position.y - (float)off._scale.y / 2f;
+                    offMax = (float)off._position.y + (float)off._scale.y / 2f;
+                    dinkOffVec = new Vector3(0, 1, 0);
+                    break;
+            }
+
+            if (offMax < localMin || offMin < localMax) return Vector3.Zero();
+            if (Math.Abs(localMin - offMax) < Math.Abs(localMax - offMin)) dinkOff = offMax;
+            else dinkOff = offMin;
+            dinkOffVec = dinkOffVec * dinkOff;
+
+            return -Vector3.AngleBetween(init._position, init._position + dinkOffVec);
+        }
+
     }
 
     public class Collider : Component
     {
-        public Vector2 _size;
         public Vector2 _offSet;
 
         public bool _isTrigger;
 
         public event Action<Collider> OnTriggerEnter;
-        public Collider(Vector2 size, Vector2 offSet, bool isTrigger) :base()
+        public Collider(Vector2 offSet, bool isTrigger) :base()
         {
-            _size = size;
+
             _offSet = offSet;
             _isTrigger = isTrigger;
         }
-        public Collider(Vector2 size, Vector2 offSet) : base()
+        public Collider(Vector2 offSet) : base()
         {
-            _size = size;
+
             _offSet = offSet;
             _isTrigger = false;
         }
+        
     }
+
+    //types of coliders
+    public class PlaneColider : Collider
+    {
+        private Plane _plane;
+        public PlaneColider(Vector2 offSet) : base(offSet)
+        {
+            double xyScale = _parent._transform._scale.x * _parent._transform._scale.y;
+            double yzScale = _parent._transform._scale.y * _parent._transform._scale.z;
+            double zxScale = _parent._transform._scale.z * _parent._transform._scale.x;
+
+            if(xyScale > yzScale && xyScale > zxScale) _plane = Plane.xy;
+            if(yzScale > xyScale && yzScale > zxScale) _plane = Plane.yz;
+            if(zxScale > xyScale && zxScale > yzScale) _plane = Plane.yz;
+        }
+        
+    }
+    //
 
     
     public class TransformController : Component, Updatable

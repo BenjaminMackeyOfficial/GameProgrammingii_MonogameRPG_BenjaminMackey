@@ -15,6 +15,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
      - z is handled independently as just the object going sideways, as in its almost its own global thing instead of also applying to the other local angles,
      - this is because i am not smart enough to write quaternions into this, maybe one day.
     */
+    public enum Plane { xy, yz, zx }
     public struct Vector3
     {
         public enum Rotations
@@ -72,6 +73,18 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
             return vec;
         }
+        public static Vector3 AngleBetween(Vector3 left, Vector3 right)
+        {
+            double dirX = right.x.Rad() - left.x.Rad();
+            double dirY = right.y.Rad() - left.y.Rad();
+            double dirZ = right.z.Rad() - left.z.Rad();
+
+            return new Vector3(
+                Math.Atan2(dirY ,Math.Sqrt(dirX * dirX + dirZ * dirZ)),
+                Math.Atan2(dirZ, dirX).Deg(),
+                0
+                );
+        }
         public double Magnitude()
         {
             return Math.Sqrt(x * x + y * y + z * z);
@@ -97,6 +110,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             return new Vector3(left.x * right.x, left.y * right.y, left.z * right.z);
         }
+        public static Vector3 operator *(Vector3 left, float right)
+        {
+            return new Vector3(left.x * right, left.y * right, left.z * right);
+        }
         public static Vector3 operator /(Vector3 left, Vector3 right)
         {
             return new Vector3(left.x / right.x, left.y / right.y, left.z / right.z);
@@ -105,6 +122,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             return new Vector3(0, 0, 0);
         }
+
         
     }
     public struct Vector2

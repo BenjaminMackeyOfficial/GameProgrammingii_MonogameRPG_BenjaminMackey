@@ -26,5 +26,22 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             if (num < min) return min;
             return num;
         }
+
+        public static double Rad(this double num)
+        {
+            return num*Math.PI/180.0;
+        }
+        public static float Rad(this float num)
+        {
+            return (float)(num * Math.PI / 180.0);
+        }
+        public static double Deg(this double num)
+        {
+            return num *  180.0 / Math.PI;
+        }
+        public static float Deg(this float num)
+        {
+            return (float)(num * 180.0 / Math.PI);
+        }
     }
 }
