@@ -8,6 +8,13 @@ using System.Threading.Tasks;
 
 namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
 {
+    //Dev note:
+    /*
+    obviously this is not done...uhhhh theres really no physics in here at all actually
+
+    in the future, id like to make a physics material class that you can give to coliders, and do some stuff like unity... i
+    think unity uses them on ridgid boddies but, ah well, you get the idea.
+    */
     public static class PhysicsSystem
     {
         private static List<(GameObject parent, Transform begin, Transform end)> moveQue = new List<(GameObject parent, Transform begin, Transform end)>();

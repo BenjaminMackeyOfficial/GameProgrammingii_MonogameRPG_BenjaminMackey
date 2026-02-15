@@ -1,4 +1,5 @@
 ﻿using GameProgrammingii_MonogameRPG_BenjaminMackey.Content;
+using GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable;
 using GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -83,6 +84,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             TransformController transformController = new TransformController(inputMap, inputMapL, 50f);
 
             mainCamera.AddComponent(transformController);
+
+
+            Map map = new Map("Map", 10000);
             //
         }
     }

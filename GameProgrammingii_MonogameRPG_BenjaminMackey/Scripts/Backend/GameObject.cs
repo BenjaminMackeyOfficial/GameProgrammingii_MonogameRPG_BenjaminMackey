@@ -22,6 +22,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public Transform _attemptedTransform { get; private set; }
         public Transform _transform { get; private set; } //threw this in cause most game objects are used for world things
 
+        private bool _hasColider; //for optimization;
+
         public GameObject()
         {
             _components = new List<Component>();
@@ -39,6 +41,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             component._parent = this;
             _components.Add(component);
             component.Initialize();
+
+            if (component.GetType() == typeof(Collider)) _hasColider = true;
+            if (component.GetType() == typeof(PlaneColider)) _hasColider = true;
         }
 
         public T GetComponent<T>() where T : Component
@@ -66,8 +71,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                     (item as Updatable).Update(); // this makes things so easy bruh what, thanks robert 
                 }
             }
+            if(_hasColider) PhysicsSystem.QuePhysicsTransformAdjustment(this, _transform, _attemptedTransform);
 
-            PhysicsSystem.QuePhysicsTransformAdjustment(this, _transform, _attemptedTransform);
         }
         public void FlushTransform(Transform setTo)
         {

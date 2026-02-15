@@ -123,7 +123,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             return left.x * right.x + left.y * right.y + left.z * right.z;
         }
-
+        public static Vector3 Lerp(Vector3 left, Vector3 right, float num)
+        {
+            num = num.Clamp(0f, 1f);
+            return left + (right - left) * num;
+        }
         public static Vector3 operator  +(Vector3 left, Vector3 right)
         {
             return new Vector3(left.x + right.x, left.y + right.y, left.z + right.z);
@@ -172,7 +176,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
         
     }
-    public struct Vector2
+    public class Vector2
     {
         public double x;
         public double y;
@@ -180,6 +184,20 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             this.x = x;
             this.y = y;
+        }
+        public static Vector2 operator +(Vector2 left, Vector2 right)
+        {
+            return new Vector2(left.x + right.x, left.y + right.y);
+        }
+        public static Vector2 operator -(Vector2 left, Vector2 right)
+        {
+            return new Vector2(left.x - right.x, left.y - right.y);
+        }
+        public static Vector2 Normal(Vector2 vec)
+        {
+            float divBY = (float)Math.Sqrt(vec.x * vec.x + vec.y * vec.y);
+            if (divBY == 0) return new Vector2(0, 0);
+            return new Vector2(vec.x / divBY, vec.y / divBY);
         }
     }
 

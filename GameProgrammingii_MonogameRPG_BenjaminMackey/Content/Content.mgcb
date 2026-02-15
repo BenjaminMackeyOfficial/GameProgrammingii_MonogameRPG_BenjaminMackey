@@ -37,6 +37,18 @@
 /processorParam:TextureFormat=Color
 /build:jet_black_3.jpg;solidBlackSquare.jpg
 
+#begin pylon.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:pylon.png
+
 #begin Square-500x500-blue.png
 /importer:TextureImporter
 /processor:TextureProcessor
