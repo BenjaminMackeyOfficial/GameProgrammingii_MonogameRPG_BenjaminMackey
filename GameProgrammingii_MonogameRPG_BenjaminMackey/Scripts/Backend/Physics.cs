@@ -14,6 +14,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
 
     in the future, id like to make a physics material class that you can give to coliders, and do some stuff like unity... i
     think unity uses them on ridgid boddies but, ah well, you get the idea.
+
+    also avert your eyes this script is awfull right now
     */
     public static class PhysicsSystem
     {

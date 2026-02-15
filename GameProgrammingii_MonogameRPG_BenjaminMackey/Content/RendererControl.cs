@@ -39,7 +39,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
            // double camAngleToHorLine = (_cameraTransform._rotation.x / 90) * 0.5;
             _renderingData.ChangeHorizonLine(0.5f);//change eventually for 3d
                                                                                                //
-                                                                                               //vision cone variables----
+                                                                                               
 
 
             //-------------------------

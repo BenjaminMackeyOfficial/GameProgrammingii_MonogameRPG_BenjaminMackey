@@ -82,30 +82,6 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             }
             return new Vector2(-1, -1);
         }
-        public static Vector2 DigThrouh2D(this List<int[]> stuff, Vector2 searchFocus, Vector2 blacklist, Vector2 bounds, out int hitType) //hyper focused booooo, low on time
-        {
-            hitType = 0;
-            for (int i = -(int)bounds.x; i < bounds.x + 1; i++)
-            {
-                for (int j = -(int)bounds.y; j < bounds.y + 1; j++)
-                {
-                    int x = i + (int)searchFocus.x;
-                    int y = j + (int)searchFocus.y;
-
-                    if (x == (int)searchFocus.x && y == (int)searchFocus.y) continue;
-                    if (x < 0 || x >= stuff.Count) continue;
-                    if (y < 0 || y >= stuff[x].Length) continue;
-                    if (x == (int)blacklist.x && y == (int)blacklist.y) continue;
-
-                    if (stuff[x][y] != 0)
-                    {
-                        hitType = stuff[x][y];
-                        return new Vector2(x, y);
-                    }
-                        
-                }
-            }
-            return new Vector2(-1, -1);
-        }
+        
     }
 }
