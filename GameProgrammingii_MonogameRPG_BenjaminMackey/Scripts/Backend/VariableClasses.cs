@@ -176,7 +176,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
         
     }
-    public class Vector2
+    public struct Vector2
     {
         public double x;
         public double y;
@@ -189,6 +189,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
             return new Vector2(left.x + right.x, left.y + right.y);
         }
+        public static Vector2 operator *(Vector2 left, float num)
+        {
+            return new Vector2(left.x * num, left.y * num);
+        }
         public static Vector2 operator -(Vector2 left, Vector2 right)
         {
             return new Vector2(left.x - right.x, left.y - right.y);
@@ -199,6 +203,17 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             if (divBY == 0) return new Vector2(0, 0);
             return new Vector2(vec.x / divBY, vec.y / divBY);
         }
+        public static bool operator==(Vector2 left, Vector2 right)
+        {
+            if (left.x == right.x && left.y == right.y) return true;
+            return false;
+        }
+        public static bool operator !=(Vector2 left, Vector2 right)
+        {
+            return !(left == right);
+        }
+
+        
     }
 
     //behold, vector one

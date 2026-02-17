@@ -14,6 +14,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
     //im aware this is an awful way to do this lol, this was just temporary until i set up the finished way... but this doest even work so oh well
     public class Map
     {
+        private Random rand = new Random();
         private List<GameObject> _colliders = new List<GameObject>();
         private List<GameObject> _decoration = new List<GameObject>();
         private int _scale = 1000;
@@ -29,7 +30,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
             //Debug.WriteLine(pos.x + " " + pos.y + " " + pos.z);
             return cone;
         }
-        private GameObject MakeColider(Vector3 pos, Vector3 rotationVector)
+        private GameObject MakeColider(Vector3 pos, Vector2 rotationVector)
         {
             Vector3 rot = new Vector3(0,0,0);
             Vector3 scale = new Vector3(100,_scale, _scale);
@@ -46,76 +47,77 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
 
             obj._transform._scale = scale;
             obj.AddComponent(colider);
-            SpriteRenderer spriteRenderer = new SpriteRenderer(SpriteBin.GetSprite("seeThroughBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
-            obj.AddComponent(spriteRenderer);
+            //SpriteRenderer spriteRenderer = new SpriteRenderer(SpriteBin.GetSprite("seeThroughBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
+            //obj.AddComponent(spriteRenderer);
 
             return obj;
 
         }
 
+        private Vector2[] GetOtherDirections(Vector2[] directions)
+        {
+            Vector2[] PossibleDirections = 
+            {
+                new Vector2(1,0),
+                new Vector2(-1,0),
+                new Vector2(0,1),
+                new Vector2(0,-1),
+            };
+            List<Vector2> builtTable = new List<Vector2>();
+
+            for (int i = 0; i < directions.Length; i++)
+            {
+                for (int j = 0; j < PossibleDirections.Length; j++)
+                {
+                    if (directions[i] == PossibleDirections[j]) PossibleDirections[j] = new Vector2(-5,-5);
+                }
+            }
+            foreach (Vector2 item in PossibleDirections)
+            {
+                if (item != new Vector2(-5, -5)) builtTable.Add(item);
+            }
+            return builtTable.ToArray();
+        }
+
 
         //cordinates are the number of nums in the file x2000 world cordinates, starting from the middle of the tile
-        
-        private void BuildTile(Vector2 old, Vector2 current, Vector2 newT)
+        private void BuildTile(Vector2 currentTilePos, Vector2 lastWall, Vector2 nextWall)
         {
-            Vector2 dirOld = old - current;
-            Vector2 dirNew = newT - current;
 
-            //Debug.WriteLine(dirOld.x + " " + dirOld.y);
-            Debug.WriteLine("Old: " + dirOld.x + " " + dirOld.y);
-            Debug.WriteLine("New: " + dirNew.x + " " + dirNew.y);
+            Vector2 dir1 = Vector2.Normal(lastWall - currentTilePos);
+            Vector2 dir2 = Vector2.Normal(nextWall - currentTilePos);
 
-            Vector2[] posDirections = {
-                new Vector2(1,0)
-                , new Vector2(-1,0)
-                , new Vector2(0,1)
-                , new Vector2(0,-1)
-            };
-            List<Vector2> drawDirs = new List<Vector2>();
 
-            foreach (Vector2 dir in posDirections)
+
+            Vector2[] temp = { dir1, dir2 };
+            Vector2[] wallDirections = GetOtherDirections(temp);
+
+            
+
+
+
+            for (int i = 0; i <2; i++)
             {
-                if (dir != dirOld && dir != dirNew) 
-                {
-                    drawDirs.Add(dir);
-                    //Debug.WriteLine(dir.x + " " +dir.y);
-                };
+                Debug.WriteLine(wallDirections[i].x + " " +wallDirections[i].y);
 
-            }
-            //Coliders
-            Vector3 adjustedForWorld;
-            for (int i = 0; i < 2; i++)
-            {
-                Vector3 toVec3 = new Vector3(drawDirs[i].x, 0, drawDirs[i].y);
-                adjustedForWorld = (new Vector3(current.x, 0, current.y) * _scale +
-                    toVec3 * ((float)_scale /2f) 
-                    );
-                MakeColider(adjustedForWorld, toVec3);
+                Vector2 wallPosition = (currentTilePos * _scale) + (wallDirections[i] * ((float)_scale / 2f));
+                Vector3 vec3WallPos = new Vector3(wallPosition.x, 0, wallPosition.y);
+
+                _colliders.Add(MakeColider(vec3WallPos, wallDirections[i]));
 
 
-
-                Vector3 traceAlong = new Vector3();
-                
-                if (i == 0) traceAlong = new Vector3(drawDirs[1].x, 0, drawDirs[1].y);
-                else traceAlong = new Vector3(drawDirs[0].x, 0, drawDirs[0].y);
-
-
-
-                Vector3 wallDir = Vector3.Normalize(traceAlong);
-                float spacing = (float)_scale / _pylonsPerWall;
+                Vector3 tangent = new Vector3(-wallDirections[i].y, 0,wallDirections[i].x);
 
                 for (int j = 0; j < _pylonsPerWall; j++)
                 {
-                    Vector3 offset = wallDir * spacing * j;
-                    Vector3 placeAt = adjustedForWorld + offset - new Vector3(0, 700, 0);
-
-                    MakePylon(placeAt);
+                    float offset = -0.5f + ((float)j / _pylonsPerWall);
+                    Debug.WriteLine(offset);
+                    MakePylon((vec3WallPos + (tangent * offset) * _scale) + new Vector3(0,-700,0));
+                    //the pylon would be made in here
                 }
-            
             }
-
-
         }
+       
 
         
         private Vector2 FindTile(List<int[]> map, int target)
@@ -131,18 +133,18 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
         }
         private void SetUpMap(List<int[]> cordinateData)
         {
-            List<Vector2> alreadyVisited = new List<Vector2>();
             Vector2 searchBounds = new Vector2(1, 1);
             Vector2 newFocus = new Vector2(0, 0);
             Vector2 curentFocus = new Vector2(0, 0); //will start off as the start position ()
             Vector2 lastFocus = new Vector2(0, 0);
 
             
-            curentFocus = FindTile(cordinateData, 4);
-            newFocus = FindTile(cordinateData, 5);
-            lastFocus = FindTile(cordinateData, 3);
+            curentFocus = FindTile(cordinateData, 4); //temp
+            newFocus = new Vector2(curentFocus.x + 1, curentFocus.y);
+            lastFocus = new Vector2(curentFocus.x - 1, curentFocus.y);
+            BuildTile(curentFocus, lastFocus, newFocus);
+            
 
-            BuildTile(lastFocus, curentFocus, newFocus);
 
             int counter = 0;
             while (true)
@@ -150,18 +152,16 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
                 counter++;
                 newFocus = cordinateData.DigThrouh2D(curentFocus, lastFocus, 1, searchBounds);
 
-                
-                alreadyVisited.Add(newFocus);
-
                 if (newFocus.x == -1 && newFocus.y == -1)break;
+
+                BuildTile(curentFocus, lastFocus, newFocus);
 
                 lastFocus = curentFocus;
                 curentFocus = newFocus;
-
-                BuildTile(lastFocus, curentFocus, newFocus);
                 //Debug.WriteLine(curentFocus.x + " " + curentFocus.y);
-            } 
-            
+            }
+            newFocus = cordinateData.DigThrouh2D(curentFocus, lastFocus, 4, searchBounds);
+            BuildTile(curentFocus, lastFocus, newFocus);
         }
         public Map(string fileName, int mapScale) //one in the future will let you pick time of day and like background and whatnot
         {
@@ -179,6 +179,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
                 }
                 cordinateData.Add(temp2);
             }
+
             _scale = mapScale;
             SetUpMap(cordinateData);
         }

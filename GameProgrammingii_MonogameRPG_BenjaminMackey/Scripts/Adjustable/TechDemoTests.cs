@@ -81,7 +81,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             Vector2InputMap inputMapL = new Vector2InputMap(fwdL, bckL, rghtL, lftL);
 
 
-            TransformController transformController = new TransformController(inputMap, inputMapL, 50f);
+            TransformController transformController = new TransformController(inputMap, inputMapL, 500f);
 
             mainCamera.AddComponent(transformController);
 
