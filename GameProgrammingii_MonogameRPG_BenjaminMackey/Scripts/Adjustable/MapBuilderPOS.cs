@@ -32,10 +32,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
         private GameObject MakeColider(Vector3 pos, Vector3 rotationVector)
         {
             Vector3 rot = new Vector3(0,0,0);
-            Vector3 scale = new Vector3(10,_scale, _scale);
+            Vector3 scale = new Vector3(100,_scale, _scale);
             if (rotationVector.y != 0)
             {
-                scale = new Vector3(_scale, _scale, 10);
+                scale = new Vector3(_scale, _scale, 100);
             }
 
 

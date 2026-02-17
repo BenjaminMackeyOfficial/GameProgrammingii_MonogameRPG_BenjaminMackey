@@ -254,17 +254,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             
             if (!(offMax >= localMin && offMin <= localMax)) 
             {
-
                 return new Vector3(99854, 99854, 99854); 
             }
-
-
             if (Vector3.Dot(init._position - off._position, dinkOffVec) < 0) dinkOffVec *= -1f;
             dinkOffVec = Vector3.NormalizeAngle(dinkOffVec);
 
             Vector3 vel = init._position - off._position;
             Debug.WriteLine(vel.x);
-            return vel - (dinkOffVec * (float)Vector3.Dot(vel, dinkOffVec));
+            return (dinkOffVec * (float)Vector3.Dot(vel, dinkOffVec));
         }
 
     }

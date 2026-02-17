@@ -73,12 +73,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
                     if (checkCol != null)
                     {
                         Vector3 reflected = Transform.ReflectOff(checkCol._plane,curEnd,checkEnd);
-
                         // if reflection happened
                         if (reflected != new Vector3(99854, 99854, 99854))
                         {
                             Vector3 direction = Vector3.Normalize(reflected);
-                            newPos = moveQue[i].begin._position + direction * dist;
+                            newPos = moveQue[i].begin._position + direction * (dist);
 
                             collidingWith.Add(newPos);
                             //Debug.WriteLine(moveQue[i].begin._position.x + " " + moveQue[i].begin._position.y + " " + moveQue[i].begin._position.z + " -> " +newPos.x + " " + newPos.y + " " + newPos.z);
