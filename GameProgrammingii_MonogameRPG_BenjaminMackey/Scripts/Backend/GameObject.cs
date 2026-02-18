@@ -15,6 +15,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 {
     public class GameObject
     {
+        public List<String> _tags = new List<String>();
         public string _name;
         public List<Component> _components { get; private set; }
 
@@ -23,12 +24,30 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
         private bool _hasColider; //for optimization;
 
+        
+
         public GameObject()
         {
             _components = new List<Component>();
             _transform = new Transform(new Vector3(0,0,0), new Vector3(0,0,0), new Vector3(10,10,10));
             _attemptedTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(10, 10, 10));
             ObjectManager.AddToWorld(this);
+        }
+
+        public void AddTag(string tag)
+        {
+            if (_tags.Contains(tag.ToLower())) return;
+            _tags.Add(tag.ToLower());
+        }
+        public void RemoveTag(string tag)
+        {
+            if (!_tags.Contains(tag.ToLower())) return;
+            _tags.Remove(tag.ToLower());
+        }
+        public bool CheckTag(string tag)
+        {
+            if (_tags.Contains(tag.ToLower())) return true;
+            return false;
         }
         public void AddComponent(Component component)
         {
@@ -87,6 +106,12 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _transform._linearVelocity = setTo._linearVelocity;
 
         }
+        public void Destroy()
+        {
+            _components.Clear();
+            ObjectManager.RemoveObject(this);
+
+        }
     }
 
     //=======================================COMPONENT CLASS STUFF==================================
@@ -96,6 +121,24 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     {
         public static int _index = 0;
         public static List<GameObject> _gameObjects = new List<GameObject>();
+
+        public static GameObject FindObjectByTag(string tag)
+        {
+            foreach (GameObject item in _gameObjects)
+            {
+                if(item.CheckTag(tag)) return item;
+            }
+            return null;
+        }
+        public static GameObject[] FindAllWithTag(string tag)
+        {
+            List<GameObject> toReturn = new List<GameObject>();
+            foreach (GameObject item in _gameObjects)
+            {
+                if (item.CheckTag(tag)) toReturn.Add(item);
+            }
+            return toReturn.ToArray();
+        }
         public static void AddToWorld(GameObject obj)
         {
 
@@ -129,6 +172,13 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public static void UpdateSingleGameObject(GameObject obj)
         {
             obj.UpdateAndRead();
+        }
+        public static void RemoveObject(GameObject obj)
+        {
+            if(_gameObjects.Contains(obj))
+            {
+                _gameObjects.Remove(obj);
+            }
         }
     }
     //----------------------------------------------------------
@@ -199,7 +249,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
 
 
-
+        public static bool CheckOverlapRadius(Transform left, Transform right)//change maybe eventually?
+        {
+            if ((right._position - left._position).Magnitude() < (left._scale / 2f + right._scale / 2f).Magnitude()) return true;
+            return false;
+        }
         private static bool CompareCords(float onePos, float oneScale, float twoPos, float twoScale)
         {
             float max1 = onePos + oneScale /2f;
@@ -258,12 +312,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             }
             if (Vector3.Dot(init._position - off._position, dinkOffVec) < 0) dinkOffVec *= -1f;
 
-            //collision 
-            Collider col = init._gameObject.GetComponent<Collider>();
-            if (col != null)
-            {
-                col.TriggerEnter();
-            }
+
+            
             dinkOffVec = Vector3.NormalizeAngle(dinkOffVec);
             Vector3 vel = init._position - off._position;
             Debug.WriteLine(vel.x);
@@ -279,10 +329,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public bool _isTrigger;
         public bool _static = true;
 
-        public event Action<Collider> OnTriggerEnter;
-        public void TriggerEnter()
+        public event Action<(Collider self, Collider other)> OnTriggerEnter;
+        public void TriggerEnter(Collider other)
         {
-            OnTriggerEnter.Invoke(this);
+            if (other == null) return;
+            OnTriggerEnter?.Invoke((this, other));
         }
         public Collider(Vector2 offSet, bool isTrigger) :base()
         {
@@ -326,8 +377,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     
     public class TransformController : Component, Updatable
     {
-        private Vector2InputMap _moveInputMap;
-        private Vector2InputMap _rotationInputMap;
+        public Vector2InputMap _moveInputMap { get; private set; }
+        public Vector2InputMap _rotationInputMap { get; private set; }
         public float _speed = 1.0f;
 
         public TransformController(Vector2InputMap inputMap, Vector2InputMap vector2InputMap, float speed) : base()

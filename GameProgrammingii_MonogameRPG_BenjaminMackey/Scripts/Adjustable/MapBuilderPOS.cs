@@ -12,15 +12,18 @@ using System.Threading.Tasks;
 namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
 {
     //im aware this is an awful way to do this lol, this was just temporary until i set up the finished way... but this doest even work so oh well
-    public class Map
+    public class Map : Behavioral
     {
         private Random rand = new Random();
         private List<GameObject> _colliders = new List<GameObject>();
         private List<GameObject> _decoration = new List<GameObject>();
+        private bool enemiesHaveLocked = false;
         private List<GameObject> _enemies = new List<GameObject>();
         private int _scale = 1000;
         private int _pylonsPerWall = 10; //maybe have palm trees eventually too?
         private int _enemySpawnRate = 2;
+
+        public Vector3 _playerSpawn;
         //some utilty stuff
         private GameObject MakePylon(Vector3 pos)
         {
@@ -35,10 +38,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
         private GameObject MakeColider(Vector3 pos, Vector2 rotationVector)
         {
             Vector3 rot = new Vector3(0,0,0);
-            Vector3 scale = new Vector3(100,_scale, _scale);
+            Vector3 scale = new Vector3(500,_scale, _scale);
             if (rotationVector.y != 0)
             {
-                scale = new Vector3(_scale, _scale, 100);
+                scale = new Vector3(_scale, _scale, 500);
             }
 
 
@@ -61,9 +64,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
             GameObject enemy = new GameObject();
             enemy._transform._position = pos;
             enemy._transform._scale = new Vector3(200, 200, 200); //random number
-
+            enemy.AddTag("enemy");
             Collider collider = new Collider(new Vector2(0,0), true);
-
+            collider._static = false;
             SpriteRenderer sprite = new SpriteRenderer(SpriteBin.GetSprite("Leoreo"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
 
 
@@ -114,8 +117,6 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
             Vector2 dir1 = Vector2.Normal(lastWall - currentTilePos);
             Vector2 dir2 = Vector2.Normal(nextWall - currentTilePos);
 
-
-
             Vector2[] temp = { dir1, dir2 };
             Vector2[] wallDirections = GetOtherDirections(temp);
 
@@ -125,7 +126,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
             if(dir1 == -dir2 && rand.Next(0,10) < _enemySpawnRate)
             {
                 Vector3 pos = new Vector3(currentTilePos.x * _scale, 0, currentTilePos.y * _scale);
-                SpawnEnemy(pos);
+                _enemies.Add(SpawnEnemy(pos));
             }
             //-----------------------
 
@@ -151,7 +152,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
             }
         }
        
-
+        
         
         private Vector2 FindTile(List<int[]> map, int target)
         {
@@ -173,6 +174,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
 
             
             curentFocus = FindTile(cordinateData, 4); //temp
+
+            _playerSpawn = new Vector3(curentFocus.x * _scale, 0, curentFocus.y * _scale);
+
             newFocus = new Vector2(curentFocus.x + 1, curentFocus.y);
             lastFocus = new Vector2(curentFocus.x - 1, curentFocus.y);
             BuildTile(curentFocus, lastFocus, newFocus);
@@ -215,6 +219,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
 
             _scale = mapScale;
             SetUpMap(cordinateData);
+        }
+        public void TellEnemiesHeyImOverHere(GameObject targ)
+        {
+            foreach (GameObject item in _enemies)
+            {
+                EnemyAIController cont= (EnemyAIController)item.GetComponent<TransformController>()._moveInputMap;
+                cont._target = targ._transform;
+            }
         }
     }
 

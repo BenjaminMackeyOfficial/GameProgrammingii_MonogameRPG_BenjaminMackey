@@ -58,8 +58,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
                     
                     Transform checkEnd = moveQue[j].end;
                     PlaneColider checkCol = moveQue[j].parent.GetComponent<PlaneColider>();
+                    Collider col = moveQue[i].parent.GetComponent<Collider>();
 
-                    Collider col = moveQue[i].parent.GetComponent<PlaneColider>();
+
                     if (col != null && col._static)
                     {
                         //Debug.WriteLine("yello");
@@ -67,15 +68,26 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
                         continue;
                     }
 
+                    Collider other = moveQue[j].parent.GetComponent<Collider>();
+                    if (col != null && other != null && Transform.CheckOverlapRadius(moveQue[i].end, checkEnd))//checking for other colider
+                    { 
+                        col.TriggerEnter(other);
+                        other.TriggerEnter(col);
+                    }
+
+                   
+
                     Vector3 newPos = moveQue[i].end._position;
                     float dist = (float)(curEnd._position - moveQue[i].parent._transform._position).Magnitude();
 
-                    if (checkCol != null)
+                    if (checkCol != null && col != null)
                     {
                         Vector3 reflected = Transform.ReflectOff(checkCol._plane,curEnd,checkEnd);
                         // if reflection happened
                         if (reflected != new Vector3(99854, 99854, 99854))
                         {
+                            col.TriggerEnter(checkCol);//trigger event
+
                             Vector3 direction = Vector3.Normalize(reflected);
                             newPos = moveQue[i].begin._position + direction * (dist);
 
