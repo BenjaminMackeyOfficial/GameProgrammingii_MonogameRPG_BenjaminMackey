@@ -56,9 +56,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             GameObject enemy = data.other._gameObject;
             if (!enemy.CheckTag("enemy")) return;
 
-            if (boosting == true) enemy.Destroy();
+            if (boosting == true && boostInTank > 0f) enemy.Destroy();
             else queDamage = true;
-            Debug.WriteLine("hittin");
+
         }
 
         private GameObject _map;
@@ -76,9 +76,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _boostKey = new ButtonAction(ConsoleKey.O);
 
             _gameObject.AddComponent(_collider);
-
             _collider.OnTriggerEnter += ColliderHit;
-
+            _collider._static = false;
             _gameObject.AddComponent(_spriteRenderer);
 
             _map.GetComponent<Map>().TellEnemiesHeyImOverHere(_gameObject);
@@ -89,9 +88,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public bool boosting = false;
 
         public float _maxTurn = 2;
-        public float _maxSpeed = 200;
+        public float _maxSpeed = 300;
         public float _acceleration = 100f;
-        public float _boostMult = 2f;
+        public float _boostMult = 0.4f;
         public float _aeroFactor = 1.001f;
         public float _rollingResistance = 1.01f;
 
@@ -113,7 +112,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             speed = speed.Clamp(-30f, _maxSpeed);
 
 
-            if (_boostKey._isHeld && boostInTank > 0) speed += _boostMult;
+            if (_boostKey._isHeld && boostInTank > 0) speed += _boostMult * _acceleration;
 
             turn = (-(float)_baseControls.x * _bodyStifness ).Clamp(-_maxTurn, _maxTurn);
         }
@@ -131,22 +130,22 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
         }
 
-        private float framegenTimeEqv = 0.01f; //ask simon about
 
-
-        //camera vars
-        Vector3 angleoffset = new Vector3(-30, 0, 0);
-        private Vector3 _cameraOffset = new Vector3(0, 400, -500);
-        //
 
         private void Die()
         {
             _acceleration = 0;
             _bodyStifness = 0;
-            speed = 0;
-
-            //_gameObject.GetComponent<SpriteRenderer>()._spriteSheet = SpriteBin.GetSprite("eplodedCar");
+            _maxSpeed = 0;
+            _gameObject.GetComponent<SpriteRenderer>()._spriteSheet = SpriteBin.GetSprite("eplodedCar");
         }
+        private float framegenTimeEqv = 0.01f; //ask simon about
+
+
+        //camera vars
+        Vector3 angleoffset = new Vector3(-30, 0, 0);
+        private Vector3 _cameraOffset;
+        //
         public override void Update()
         {
 
@@ -155,9 +154,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
             Debug.WriteLine("speed = " + speed + ", turn = " + turn);
 
-
+            float focalMod = 0.5f + (float)Math.Sin((speed / _maxSpeed) / 2f);
             if (_boostKey._isHeld)
-            {
+            { 
                 boosting = true;
                 boostInTank -= 0.5f;
             }
@@ -170,12 +169,15 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             if (queDamage == true) health -= 1f;
             if (health < 0)
             {
+                focalMod = 0.5f;
                 Die();
             }
             Debug.WriteLine(health);
             queDamage = false;
 
 
+            
+            _cameraOffset = new Vector3(0, 400, -700 * focalMod );
             Vector3 angleSet = -_gameObject._attemptedTransform._rotation; //make it feel livley in the future
             Vector3 adjPos = _gameObject._attemptedTransform._position + _cameraOffset;
             _cam._transform._position = Vector3.RotatePositionAroundWorldPoint(adjPos,_gameObject._attemptedTransform._position, angleSet);

@@ -63,11 +63,15 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             Map map = new Map("Map", 10000);
             mapObj.AddComponent(map);
 
+            
             GameObject car = new GameObject();
             car._transform._scale = new Vector3(100, 100, 100);
             car._name = "Car";
+
+            
             CarController carController = new CarController();
             car.AddComponent(carController);
+            
         }
     }
 }

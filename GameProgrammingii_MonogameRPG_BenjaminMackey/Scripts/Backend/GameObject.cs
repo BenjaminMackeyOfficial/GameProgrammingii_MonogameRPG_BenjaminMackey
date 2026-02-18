@@ -23,7 +23,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public Transform _transform { get; private set; } //threw this in cause most game objects are used for world things
 
         private bool _hasColider; //for optimization;
-
+        public bool _quedForDestroy = false;
         
 
         public GameObject()
@@ -108,9 +108,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public void Destroy()
         {
-            _components.Clear();
-            ObjectManager.RemoveObject(this);
-
+            _quedForDestroy = true;
         }
     }
 
@@ -163,9 +161,15 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public static void UpdateAllGameObjects()
         {
+            List<GameObject> toDest = new List<GameObject>();
             for (int i = 0; i < _gameObjects.Count; i++)
             {
+                if (_gameObjects[i]._quedForDestroy) toDest.Add(_gameObjects[i]);
                 _gameObjects[i].UpdateAndRead();
+            }
+            foreach (GameObject item in toDest)
+            {
+                _gameObjects.Remove(item);
             }
         }
         
@@ -424,7 +428,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     public class SpriteRenderer : Component
     {
         public int _serveImage { get; protected set;  }
-        public Texture2D _spriteSheet { get; private set; }
+        public Texture2D _spriteSheet;
         public RenderFrom _renderFrom;
         public bool _enabled = true;
 
@@ -442,7 +446,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             
             _spriteSheet = spriteSheet;
             _renderFrom = rendFrom;
-           
+
 
             //BUILDING the sprite sheet into an array of cordinates
             int baseSizeX = _spriteSheet.Width / (int)numOfSpritesWidthAndHeight.x;

@@ -53,7 +53,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             //SpriteBin.Add(Content.Load<Texture2D>("blueSquare"), "blueSquare");
             SpriteBin.Add(Content.Load<Texture2D>("pylon"), "pylon");
             SpriteBin.Add(Content.Load<Texture2D>("Leoreo"), "Leoreo");
-            //SpriteBin.Add(Content.Load<Texture2D>("eplodedCar"), "eplodedCar");
+            SpriteBin.Add(Content.Load<Texture2D>("TempCar"), "TempCar");
+            SpriteBin.Add(Content.Load<Texture2D>("eplodedCar"), "eplodedCar");
 
 
             //--
