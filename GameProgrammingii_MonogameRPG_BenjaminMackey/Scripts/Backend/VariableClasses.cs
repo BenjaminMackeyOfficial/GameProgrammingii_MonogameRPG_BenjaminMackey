@@ -85,6 +85,16 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                 0
                 );
         }
+        public static Vector3 LookAtRotation(Vector3 angle)
+        {
+            angle = Normalize(angle);
+
+            float yaw = (float)(Math.Atan2(angle.x, angle.z).Deg());
+            float pitch = (float)(-Math.Asin(angle.y).Deg());
+
+            return new Vector3(pitch, yaw, 0);
+        }
+
         public double Magnitude()
         {
             return Math.Sqrt(x * x + y * y + z * z);
@@ -196,6 +206,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public static Vector2 operator -(Vector2 left, Vector2 right)
         {
             return new Vector2(left.x - right.x, left.y - right.y);
+        }
+        public static Vector2 operator -(Vector2 left)
+        {
+            return new Vector2(-left.x , -left.y);
         }
         public static Vector2 Normal(Vector2 vec)
         {

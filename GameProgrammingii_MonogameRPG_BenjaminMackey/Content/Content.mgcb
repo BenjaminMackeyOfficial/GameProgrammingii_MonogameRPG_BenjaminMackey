@@ -49,6 +49,30 @@
 /processorParam:TextureFormat=Color
 /build:pylon.png
 
+#begin realistic-suv-isolated-on-transparent-background-3d-rendering-illustration-png.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:realistic-suv-isolated-on-transparent-background-3d-rendering-illustration-png.png;TempCar.png
+
+#begin Screenshot 2026-02-17 224226.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Screenshot 2026-02-17 224226.png;Leoreo.png
+
 #begin Square-500x500-blue.png
 /importer:TextureImporter
 /processor:TextureProcessor

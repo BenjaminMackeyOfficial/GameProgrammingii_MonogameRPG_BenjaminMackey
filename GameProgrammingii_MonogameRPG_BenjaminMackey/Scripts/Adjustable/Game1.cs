@@ -1,5 +1,4 @@
-﻿using GameProgrammingii_MonogameRPG_BenjaminMackey.Content;
-using GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend;
+﻿using GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -38,6 +37,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             //Rendering controller and stuff
             RenderController.UpdateRenderVariables(_graphics);
 
+
+
             TechDemoTests test = new TechDemoTests();
             test.testMethod();
         }
@@ -51,6 +52,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             SpriteBin.Add(Content.Load<Texture2D>("blackSquare"), "seeThroughBlackSquare");
             SpriteBin.Add(Content.Load<Texture2D>("blueSquare"), "blueSquare");
             SpriteBin.Add(Content.Load<Texture2D>("pylon"), "pylon");
+            SpriteBin.Add(Content.Load<Texture2D>("Leoreo"), "Leoreo");
+            SpriteBin.Add(Content.Load<Texture2D>("TempCar"), "TempCar");
 
             //--
 

@@ -17,8 +17,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
         private Random rand = new Random();
         private List<GameObject> _colliders = new List<GameObject>();
         private List<GameObject> _decoration = new List<GameObject>();
+        private List<GameObject> _enemies = new List<GameObject>();
         private int _scale = 1000;
         private int _pylonsPerWall = 10; //maybe have palm trees eventually too?
+        private int _enemySpawnRate = 2;
         //some utilty stuff
         private GameObject MakePylon(Vector3 pos)
         {
@@ -54,6 +56,31 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
 
         }
 
+        private GameObject SpawnEnemy(Vector3 pos)
+        {
+            GameObject enemy = new GameObject();
+            enemy._transform._position = pos;
+            enemy._transform._scale = new Vector3(200, 200, 200); //random number
+
+            Collider collider = new Collider(new Vector2(0,0), true);
+
+            SpriteRenderer sprite = new SpriteRenderer(SpriteBin.GetSprite("Leoreo"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
+
+
+            EnemyAIController enemyAIController = new EnemyAIController();
+            enemyAIController._searchDistance = _scale;
+            enemyAIController._self = enemy._transform;
+            enemyAIController._target = RenderController._cameraTransform; //not permanent, add general enemy info bin 
+            enemyAIController._movmentStrategy = new AgressiveMovmentStrategy();
+
+            TransformController transformController = new TransformController(enemyAIController, new Vector2InputMap(true), 100f);
+            
+            enemy.AddComponent(transformController);
+            enemy.AddComponent(sprite);
+            enemy.AddComponent(collider);
+            return enemy;
+                
+        }
         private Vector2[] GetOtherDirections(Vector2[] directions)
         {
             Vector2[] PossibleDirections = 
@@ -94,7 +121,13 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
 
             
 
-
+            //temp enemy spawning----
+            if(dir1 == -dir2 && rand.Next(0,10) < _enemySpawnRate)
+            {
+                Vector3 pos = new Vector3(currentTilePos.x * _scale, 0, currentTilePos.y * _scale);
+                SpawnEnemy(pos);
+            }
+            //-----------------------
 
             for (int i = 0; i <2; i++)
             {

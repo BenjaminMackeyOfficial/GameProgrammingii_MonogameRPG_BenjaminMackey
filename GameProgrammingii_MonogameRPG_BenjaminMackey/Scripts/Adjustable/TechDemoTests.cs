@@ -1,4 +1,4 @@
-﻿using GameProgrammingii_MonogameRPG_BenjaminMackey.Content;
+﻿
 using GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable;
 using GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend;
 using Microsoft.Xna.Framework;
@@ -16,7 +16,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     {
         public void testMethod()
         {
-            //making the camera 
+            /*making the camera 
             GameObject mainCamera = new GameObject();
             mainCamera._transform._position = new Vector3(0, 0, 0);
             mainCamera._transform._scale = new Vector3(100, 100, 100);
@@ -27,44 +27,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             collider._static = false;
             mainCamera.AddComponent(collider);
             mainCamera.AddComponent(cam);
-            cam._parent._transform._position = Vector3.Zero();
+            cam._gameObject._transform._position = Vector3.Zero();
     
             RenderController._camera = cam;
             RenderController._cameraTransform = mainCamera._transform;
 
-            
-
-
-
-            //------------------
-
-            //
-
-            /*
-        GameObject square = new GameObject();
-        square._name = "Blue";
-        SpriteRenderer sprite = new SpriteRenderer(SpriteBin.GetSprite("blueSquare"), new Vector2(1,1), SpriteRenderer.RenderFrom.Centre);
-
-        square.AddComponent(sprite);
-
-        square._transform._position = new Vector3(0, 0, 3);
-        */
-
-            GameObject squareTwo = new GameObject();
-            SpriteRenderer spriteTwo = new SpriteRenderer(SpriteBin.GetSprite("solidBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
-            squareTwo.AddComponent(spriteTwo);
-            squareTwo._transform._position = new Vector3(0, 0, 1500);
-            squareTwo._transform._scale = new Vector3(1000, 1000, 40);
-            PlaneColider p1 = new PlaneColider(new Vector2(0, 0));
-            squareTwo.AddComponent(p1);
-
-            GameObject square3 = new GameObject();
-            SpriteRenderer sprite3 = new SpriteRenderer(SpriteBin.GetSprite("solidBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
-            square3.AddComponent(sprite3);
-            square3._transform._position = new Vector3(1000, 0, 3000);
-            square3._transform._scale = new Vector3(100, 50, 40);
-            PlaneColider p2 = new PlaneColider(new Vector2(0, 0));
-            square3.AddComponent(p2);
 
             ButtonAction fwd = new ButtonAction(ConsoleKey.W);
             ButtonAction bck = new ButtonAction(ConsoleKey.S);
@@ -85,9 +52,17 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
             mainCamera.AddComponent(transformController);
 
+            */
+
+            GameObject car = new GameObject();
+            car._transform._scale = new Vector3(100, 100, 100);
+
+            CarController carController = new CarController();
+
+            car.AddComponent(carController);
 
             Map map = new Map("Map", 10000);
-            //
+            
         }
     }
 }

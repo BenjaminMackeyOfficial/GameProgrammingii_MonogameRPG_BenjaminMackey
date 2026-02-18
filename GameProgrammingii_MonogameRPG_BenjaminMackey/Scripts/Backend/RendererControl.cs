@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
+namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
 {
     //opperates like the main game world, figures out where to render everything accordingly
     public static class RenderController
@@ -66,12 +66,12 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
 
                 //drawing to screen (very important)
 
-                float textureSizeBalance = (
-                    (
-                    (_renderingData._height * _renderingData._width) /
+                float textureSizeBalance = 
+                    
+                    _renderingData._height * _renderingData._width /
                     (drawObj._texture.Height * drawObj._texture.Width)
-                    )/1000f
-                    );
+                    /1000f
+                    ;
 
                 float perspective = (float)(_camera._3dDepth / adjustedWorldPos.z); // * textureSizeBalance;
                 
@@ -79,7 +79,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
                 drawObj._position = new Microsoft.Xna.Framework.Vector2(
 
                     _renderingData._width * 0.5f + (float)adjustedWorldPos.x * perspective,
-                    (float)((float)_renderingData._height * _renderingData._horizonLine) - (float)adjustedWorldPos.y * perspective
+                    (float)(_renderingData._height * _renderingData._horizonLine) - (float)adjustedWorldPos.y * perspective
                 );
                 /*in the attempt to fake combat edge of screen size
                 float scaleDownSizeX = 1 / Math.Abs(drawObj._position.X - (_renderingData._width / 2f));
@@ -89,8 +89,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Content
 
                */
                 drawObj._scale = new Microsoft.Xna.Framework.Vector2(
-                    (((float)item._transform._scale.x + (float)item._transform._scale.z) / 2) * perspective * textureSizeBalance ,//* scaleDownSizeX,
-                    ((float)item._transform._scale.y )* perspective * textureSizeBalance //* scaleDownSizeY
+                    ((float)item._transform._scale.x + (float)item._transform._scale.z) / 2 * perspective * textureSizeBalance ,//* scaleDownSizeX,
+                    (float)item._transform._scale.y * perspective * textureSizeBalance //* scaleDownSizeY
                 );
 
                 drawObj._dist = 1 / (float)adjustedWorldPos.z;

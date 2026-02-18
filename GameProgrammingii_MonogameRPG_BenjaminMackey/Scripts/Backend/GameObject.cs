@@ -1,5 +1,4 @@
-﻿using GameProgrammingii_MonogameRPG_BenjaminMackey.Content;
-using GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend;
+﻿using GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -19,7 +18,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public string _name;
         public List<Component> _components { get; private set; }
 
-        public Transform _attemptedTransform { get; private set; }
+        public Transform _attemptedTransform { get; protected set; }
         public Transform _transform { get; private set; } //threw this in cause most game objects are used for world things
 
         private bool _hasColider; //for optimization;
@@ -38,7 +37,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                 Debug.Write("Could not add component!");
                 return;
             }
-            component._parent = this;
+            component._gameObject = this;
             _components.Add(component);
             component.Initialize();
 
@@ -141,7 +140,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
     public class Component
     {
         public int _id { get; private set; }
-        public GameObject _parent;
+        public GameObject _gameObject;
        
         public Component()
         {
@@ -152,6 +151,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         {
 
         }
+        
     }
 
 
@@ -257,8 +257,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                 return new Vector3(99854, 99854, 99854); 
             }
             if (Vector3.Dot(init._position - off._position, dinkOffVec) < 0) dinkOffVec *= -1f;
-            dinkOffVec = Vector3.NormalizeAngle(dinkOffVec);
 
+            //collision 
+            Collider col = init._gameObject.GetComponent<Collider>();
+            if (col != null)
+            {
+                col.TriggerEnter();
+            }
+            dinkOffVec = Vector3.NormalizeAngle(dinkOffVec);
             Vector3 vel = init._position - off._position;
             Debug.WriteLine(vel.x);
             return (dinkOffVec * (float)Vector3.Dot(vel, dinkOffVec));
@@ -274,6 +280,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public bool _static = true;
 
         public event Action<Collider> OnTriggerEnter;
+        public void TriggerEnter()
+        {
+            OnTriggerEnter.Invoke(this);
+        }
         public Collider(Vector2 offSet, bool isTrigger) :base()
         {
 
@@ -300,9 +310,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public override void Initialize()
         {
             _plane = Plane.xy;
-            double xyScale = _parent._transform._scale.x * _parent._transform._scale.y;
-            double yzScale = _parent._transform._scale.y * _parent._transform._scale.z;
-            double zxScale = _parent._transform._scale.z * _parent._transform._scale.x;
+            double xyScale = _gameObject._transform._scale.x * _gameObject._transform._scale.y;
+            double yzScale = _gameObject._transform._scale.y * _gameObject._transform._scale.z;
+            double zxScale = _gameObject._transform._scale.z * _gameObject._transform._scale.x;
 
             if (xyScale > yzScale && xyScale > zxScale) _plane = Plane.xy;
             if (yzScale > xyScale && yzScale > zxScale) _plane = Plane.yz;
@@ -328,17 +338,17 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public void Update()
         {
-            Vector3 forward = _parent._transform.Forward();
-            Vector3 right = _parent._transform.Right();
-            
-            _parent._attemptedTransform._position.x += (_moveInputMap.y * forward.z) * _speed;
-            _parent._attemptedTransform._position.z += (_moveInputMap.y * forward.x) * _speed;
+            Vector3 forward = _gameObject._transform.Forward();
+            Vector3 right = _gameObject._transform.Right();
 
-            _parent._attemptedTransform._position.x += (_moveInputMap.x * right.z) * _speed;
-            _parent._attemptedTransform._position.z += (_moveInputMap.x * right.x) * _speed;
+            _gameObject._attemptedTransform._position.x += (_moveInputMap.y * forward.z) * _speed;
+            _gameObject._attemptedTransform._position.z += (_moveInputMap.y * forward.x) * _speed;
 
-            _parent._attemptedTransform._rotation.x += -_rotationInputMap.y;
-            _parent._attemptedTransform._rotation.y += (_rotationInputMap.x);
+            _gameObject._attemptedTransform._position.x += (_moveInputMap.x * right.z) * _speed;
+            _gameObject._attemptedTransform._position.z += (_moveInputMap.x * right.x) * _speed;
+
+            _gameObject._attemptedTransform._rotation.x += -_rotationInputMap.y;
+            _gameObject._attemptedTransform._rotation.y += (_rotationInputMap.x);
 
             //Debug.WriteLine(_parent._transform.Forward().x + " " + _parent._transform.Forward().y + " " + _parent._transform.Forward().z);
         }

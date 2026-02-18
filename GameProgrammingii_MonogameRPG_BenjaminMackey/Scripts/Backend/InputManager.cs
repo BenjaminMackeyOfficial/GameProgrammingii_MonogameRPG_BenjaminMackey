@@ -52,8 +52,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
     public class Vector2InputMap : Updatable
     {
-        public double x { get; private set; }
-        public double y { get; private set; }
+        public double x { get; protected set; }
+        public double y { get; protected set; }
 
         public ButtonAction _right;
         public ButtonAction _up;
@@ -68,6 +68,15 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             if(right != null) _right = right;
             if(left != null) _left = left;
         }
+        public Vector2InputMap(bool empty)
+        {
+            if (empty) return;
+            InputManager.ActivateInputAction(this);
+        }
+        public Vector2InputMap()
+        {
+            InputManager.ActivateInputAction(this);
+        }
         public virtual void Update()
         {
             Vector2 tmp = new Vector2(0,0);
@@ -81,9 +90,22 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             tmp.x = tmp.x.Clamp(-1, 1);
             //-----------------------------
 
+
             x = tmp.x;
             y = tmp.y;
             //.Debug.WriteLine(x);
+        }
+
+        public static Vector2InputMap DefaultWasdMap()
+        {
+            ButtonAction fwd = new ButtonAction(ConsoleKey.W);
+            ButtonAction bck = new ButtonAction(ConsoleKey.S);
+            ButtonAction lft = new ButtonAction(ConsoleKey.A);
+            ButtonAction rght = new ButtonAction(ConsoleKey.D);
+
+            Vector2InputMap inputMap = new Vector2InputMap(fwd, bck, rght, lft);
+
+            return inputMap;
         }
     }
     //=============================================
