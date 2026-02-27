@@ -46,12 +46,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            //texture = Content.Load<Texture2D>("blackSquare");
-            // TODO: use this.Content to load your game content here
-            //SpriteBin.Add(Content.Load<Texture2D>("solidBlackSquare"), "solidBlackSquare");
-            //SpriteBin.Add(Content.Load<Texture2D>("blackSquare"), "seeThroughBlackSquare");
-            //SpriteBin.Add(Content.Load<Texture2D>("blueSquare"), "blueSquare");
-            SpriteBin.Add(Content.Load<Texture2D>("pylon"), "pylon");
+
             SpriteBin.Add(Content.Load<Texture2D>("Leoreo"), "Leoreo");
             SpriteBin.Add(Content.Load<Texture2D>("TempCar"), "TempCar");
             SpriteBin.Add(Content.Load<Texture2D>("eplodedCar"), "eplodedCar");
