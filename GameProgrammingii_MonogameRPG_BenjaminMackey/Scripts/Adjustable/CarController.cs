@@ -9,6 +9,52 @@ using System.Threading.Tasks;
 
 namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 {
+    public class ScreenUiForCar
+    {
+        public GameObject _boostMeter;
+        public GameObject _healthMeter;
+        public GameObject _killedEnemyAlert;
+
+        float screenEndPosPercent = 0.4f;
+
+        public ScreenUiForCar()
+        {
+            _boostMeter = new GameObject();
+            SpriteRenderer bostMeeterUi = new SpriteRenderer(SpriteBin.GetSprite("solidBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
+            bostMeeterUi.zLayer = 0.5f;
+            bostMeeterUi.UI = true;
+            _boostMeter.AddComponent(bostMeeterUi);
+
+            _healthMeter = new GameObject();
+            SpriteRenderer healthMeterUi = new SpriteRenderer(SpriteBin.GetSprite("solidBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
+            healthMeterUi.zLayer = 0.4f;
+            healthMeterUi.UI = true;
+            _healthMeter.AddComponent(healthMeterUi);
+        }
+        public void AdjustUiMeters(float healthPercent, float boostPercent)
+        {
+            Debug.WriteLine("health perc = " + healthPercent + "boost perc = " + boostPercent);
+            healthPercent = healthPercent.Clamp(0, 1);
+            boostPercent = boostPercent.Clamp(0, 1);
+
+            float barSize = screenEndPosPercent;
+
+            float boostBarSize = (barSize * boostPercent);
+            float healthBarSize = (barSize * healthPercent);
+            
+
+           
+            _boostMeter._transform._position = new Vector3(10 + barSize * 2, 10, 0);
+            _boostMeter._transform._scale = new Vector3(boostBarSize, 0.1f,0);
+
+            _healthMeter._transform._position = new Vector3(10 + barSize * 2, 140, 0);
+            _healthMeter._transform._scale = new Vector3(healthBarSize, 0.1f, 0);
+        }
+        public void PingEnemyKill()
+        {
+
+        }
+    }
     public class CarController : Behavioral
     {
         private GameObject _cam;
@@ -17,6 +63,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         private Vector2InputMap _baseControls;
         private ButtonAction _boostKey;
         private ButtonAction _driftKey;
+
+        private ScreenUiForCar _screenUiForCar;
 
         
 
@@ -54,15 +102,33 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
 
         private void ColliderHit((Collider self, Collider other) data)
         {
-            GameObject enemy = data.other._gameObject;
-            if (!enemy.CheckTag("enemy")) return;
+            GameObject collision = data.other._gameObject;
 
-            if (boosting == true && boostInTank > 0f) enemy.Destroy();
-            else queDamage = true;
+            if (collision.GetComponent<PlaneColider>() != null)
+            {
+                
+                speed = -speed * 0.8f;
+            }
+            if (collision.CheckTag("enemy"))
+            {
+                if (collision.CheckTag("bomber")) ForceTakeDamage(int.MaxValue);
+
+                if (boosting == true && boostInTank > 0f) collision.Destroy();
+                else queDamage = true;
+            }
+            else if(collision.CheckTag("pickup"))
+            {
+                Debug.WriteLine("col = " + collision.GetComponent<Pickup>());
+                collision.GetComponentAmbig<Pickup>().Effect(this);
+                collision.Destroy();
+            }
+            
 
         }
+        
         public void ForceTakeDamage(float dmg)
         {
+            if (invFrames > 0) return;
             health -= dmg;
         }
 
@@ -84,7 +150,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _collider.OnTriggerEnter += ColliderHit;
             _collider._static = false;
             _gameObject.AddComponent(_spriteRenderer);
-
+            _screenUiForCar = new ScreenUiForCar();
             //_map.GetComponent<Map>().TellEnemiesHeyImOverHere(_gameObject);
         }
         
@@ -104,14 +170,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         private float turn= 0f;
         
         private float speed = 0f;
-        private float boostInTank = 0f;
+        public float boostInTank = 0f;
 
-        private float health = 100f;
+        public float health = 100f;
         //physics
+
+        public int invFrames = 0;
         private void adjustCarInputValues() //ill make this better in the future
         {
-            
-
             speed += (float)_baseControls.y * _acceleration * framegenTimeEqv;
             speed /= _aeroFactor;
             speed = speed.Clamp(-30f, _maxSpeed);
@@ -130,7 +196,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _gameObject._attemptedTransform._position += newPosition;
             _gameObject._attemptedTransform._rotation += new Vector3(0, turn, 0);
 
-            Debug.WriteLine(turn);
+            //Debug.WriteLine(turn);
             //Debug.WriteLine(_gameObject._transform._position.x + " " + newPosition.x);
 
         }
@@ -153,13 +219,12 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         //
         public override void Update()
         {
-
             adjustCarInputValues();
             moveCar();
-
-            Debug.WriteLine("speed = " + speed + ", turn = " + turn);
+            //Debug.WriteLine("speed = " + speed + ", turn = " + turn);
 
             float focalMod = 0.5f + (float)Math.Sin((speed / _maxSpeed) / 2f);
+            //Debug.WriteLine(speed);
             if (_boostKey._isHeld)
             { 
                 boosting = true;
@@ -170,17 +235,21 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                 boosting = false;
                 boostInTank += 0.1f;
             }
+            boostInTank = boostInTank.Clamp(0f, 40f);
 
-            if (queDamage == true) health -= 1f;
+            if (queDamage == true && invFrames <= 0) health -= 1f;
             if (health < 0)
             {
                 focalMod = 0.5f;
                 Die();
             }
-            Debug.WriteLine(health);
+            //Debug.WriteLine(health);
+            health = health.Clamp(0f, 100f);
+            invFrames = (invFrames-1).Clamp(0,100);
             queDamage = false;
 
 
+            _screenUiForCar.AdjustUiMeters(health / 100f, boostInTank / 40f);
             
             _cameraOffset = new Vector3(0, 400, -700 * focalMod );
             Vector3 angleSet = -_gameObject._attemptedTransform._rotation; //make it feel livley in the future

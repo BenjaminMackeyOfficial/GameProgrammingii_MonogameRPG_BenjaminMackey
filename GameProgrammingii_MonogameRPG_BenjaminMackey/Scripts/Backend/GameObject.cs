@@ -77,6 +77,21 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             }
             return (T)component;
         }
+
+        public T GetComponentAmbig<T>() where T : Component//tried to change the og to this and it broke a bunch of stuff
+        {
+            foreach (Component comp in _components)
+            {
+                if (comp is T c)
+                {
+                    return c;
+                }
+            }
+
+            return null;
+        }
+        public event Action<bool> _Updated;
+
         public void UpdateAndRead()
         {
             _attemptedTransform._position = _transform._position;
@@ -90,6 +105,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
                 }
             }
             if(_hasColider) PhysicsSystem.QuePhysicsTransformAdjustment(this, _transform, _attemptedTransform);
+            _Updated?.Invoke(true);
 
         }
         public void FlushTransform(Transform setTo)
@@ -139,7 +155,6 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public static void AddToWorld(GameObject obj)
         {
-
             if(!_gameObjects.Contains(obj)) _gameObjects.Add(obj);      
         }
         public static bool RequestAdd(GameObject gameObj, Component component)
@@ -169,7 +184,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             }
             foreach (GameObject item in toDest)
             {
-                _gameObjects.Remove(item);
+                RemoveObject(item);
             }
         }
         
@@ -341,13 +356,11 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         }
         public Collider(Vector2 offSet, bool isTrigger) :base()
         {
-
             _offSet = offSet;
             _isTrigger = isTrigger;
         }
         public Collider(Vector2 offSet) : base()
         {
-
             _offSet = offSet;
             _isTrigger = false;
         }
@@ -372,9 +385,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             if (xyScale > yzScale && xyScale > zxScale) _plane = Plane.xy;
             if (yzScale > xyScale && yzScale > zxScale) _plane = Plane.yz;
             if (zxScale > xyScale && zxScale > yzScale) _plane = Plane.yz;
-        }
-
-        
+        } 
     }
     //
 
@@ -390,6 +401,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _moveInputMap = inputMap;
             _rotationInputMap = vector2InputMap;
             this._speed = speed;
+
         }
         public void Update()
         {
@@ -436,6 +448,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         public bool _faceTheCameraY = true; // same here
 
         public Microsoft.Xna.Framework.Rectangle[] _spritePositions;
+
+        public bool UI = false;
+        public float zLayer = 0;
 
         public enum RenderFrom
         {

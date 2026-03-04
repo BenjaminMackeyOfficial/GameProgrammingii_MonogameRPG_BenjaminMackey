@@ -48,6 +48,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
                 //checking if gameobject even has a renderer
                 if (item.GetComponent<SpriteRenderer>() == null) continue;
 
+                SpriteRenderer spriteRenderer = item.GetComponent<SpriteRenderer>();
+                
 
                 adjustedWorldPos = item._transform._position - _cameraTransform._position; //moving
 
@@ -58,7 +60,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
                 //if (adjustedWorldPos.Magnitude() > _camera._renderDistance || adjustedWorldPos.z < 0) continue;
 
 
-                SpriteRenderer spriteRenderer = item.GetComponent<SpriteRenderer>();
+                
                 //the actual placing of sprites
                 RenderObjectData drawObj = new RenderObjectData();
                 drawObj._texture = spriteRenderer._spriteSheet;
@@ -73,27 +75,49 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
                     /1000f
                     ;
 
-                float perspective = (float)(_camera._3dDepth / adjustedWorldPos.z); // * textureSizeBalance;
+
+                if (spriteRenderer.UI == true)
+                {
+                    Debug.WriteLine("drawin a ui baby");
+                    drawObj._position = new Microsoft.Xna.Framework.Vector2(
+                        (float)item._transform._position.x, 
+                        (float)item._transform._position.y
+                        );
+                    drawObj._scale = new Microsoft.Xna.Framework.Vector2(
+                        (float)item._transform._scale.x,//* scaleDownSizeX,
+                        (float)item._transform._scale.y //* scaleDownSizeY
+                    );
+                    drawObj._dist = 1f;
+
+                    
+                    
+                }
+                else
+                {
+                    float perspective = (float)(_camera._3dDepth / adjustedWorldPos.z); // * textureSizeBalance;
+
+
+                    drawObj._position = new Microsoft.Xna.Framework.Vector2(
+
+                        _renderingData._width * 0.5f + (float)adjustedWorldPos.x * perspective,
+                        (float)(_renderingData._height * _renderingData._horizonLine) - (float)adjustedWorldPos.y * perspective
+                    );
+                    /*in the attempt to fake combat edge of screen size
+                    float scaleDownSizeX = 1 / Math.Abs(drawObj._position.X - (_renderingData._width / 2f));
+                    float scaleDownSizeY = 1 / Math.Abs(drawObj._position.Y - (_renderingData._height / 2f));
+                    scaleDownSizeX = (float)Math.Sin((float)scaleDownSizeX);
+                    scaleDownSizeY = (float)Math.Sin((float)scaleDownSizeY);
+
+                   */
+                    drawObj._scale = new Microsoft.Xna.Framework.Vector2(
+                        ((float)item._transform._scale.x + (float)item._transform._scale.z) / 2 * perspective * textureSizeBalance,//* scaleDownSizeX,
+                        (float)item._transform._scale.y * perspective * textureSizeBalance //* scaleDownSizeY
+                    );
+
+                    drawObj._dist = 0.5f / (float)adjustedWorldPos.z;
+                    if (item.CheckTag("test")) Debug.WriteLine(drawObj._scale);
+                }
                 
-
-                drawObj._position = new Microsoft.Xna.Framework.Vector2(
-
-                    _renderingData._width * 0.5f + (float)adjustedWorldPos.x * perspective,
-                    (float)(_renderingData._height * _renderingData._horizonLine) - (float)adjustedWorldPos.y * perspective
-                );
-                /*in the attempt to fake combat edge of screen size
-                float scaleDownSizeX = 1 / Math.Abs(drawObj._position.X - (_renderingData._width / 2f));
-                float scaleDownSizeY = 1 / Math.Abs(drawObj._position.Y - (_renderingData._height / 2f));
-                scaleDownSizeX = (float)Math.Sin((float)scaleDownSizeX);
-                scaleDownSizeY = (float)Math.Sin((float)scaleDownSizeY);
-
-               */
-                drawObj._scale = new Microsoft.Xna.Framework.Vector2(
-                    ((float)item._transform._scale.x + (float)item._transform._scale.z) / 2 * perspective * textureSizeBalance ,//* scaleDownSizeX,
-                    (float)item._transform._scale.y * perspective * textureSizeBalance //* scaleDownSizeY
-                );
-
-                drawObj._dist = 1 / (float)adjustedWorldPos.z;
                 //-----
 
                 //Debug.WriteLine(adjustedWorldPos.Magnitude() + " " + adjustedWorldPos.z);

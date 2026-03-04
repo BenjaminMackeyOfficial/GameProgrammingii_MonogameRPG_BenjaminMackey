@@ -21,7 +21,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
         private List<GameObject> _enemies = new List<GameObject>();
         private int _scale = 1000;
         private int _pylonsPerWall = 10; //maybe have palm trees eventually too?
-        private int _enemySpawnRate = 2;
+        private int _enemySpawnRate = 5;
+        private int _itemSpawnRate = 7;
 
         public Vector3 _playerSpawn;
         //some utilty stuff
@@ -131,7 +132,16 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
                 {
                     scale = new Vector3(501, 501, 500);
                 }
-                EnemyManager.Instance.CreateBlockade(pos, scale);
+                if((_playerSpawn - pos).Magnitude() > 10000f) EnemyManager.Instance.CreateRandom(pos, scale);
+
+            }
+            //-----------------------
+
+            //items------------------
+            if(rand.Next(0,10) < _itemSpawnRate)
+            {
+                Vector3 pos = new Vector3(currentTilePos.x * _scale, 0, currentTilePos.y * _scale);
+                PickupManager.Instance.MakeRandomPickup(pos);
             }
             //-----------------------
 
@@ -186,7 +196,14 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
             lastFocus = new Vector2(curentFocus.x - 1, curentFocus.y);
             BuildTile(curentFocus, lastFocus, newFocus);
 
-            EnemyInfoBin._player._transform._position = new Vector3(curentFocus.x, 0, curentFocus.y) * _scale;
+            GameObject test = new GameObject();
+            SpriteRenderer bostMeeterUi = new SpriteRenderer(SpriteBin.GetSprite("solidBlackSquare"), new Vector2(1, 1), SpriteRenderer.RenderFrom.Centre);
+            bostMeeterUi.UI = false;
+            test._transform._position = _playerSpawn;
+            test.AddComponent(bostMeeterUi);
+            test.AddTag("test");
+
+            EnemyInfoBin._player._transform._position = _playerSpawn;
 
             int counter = 0;
             while (true)

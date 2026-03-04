@@ -48,27 +48,44 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
             return Vector2.Normal(new Vector2(movePos.x, movePos.z));
         }
     }
+
+  
     public class SlideOnPlaneMovmentStrategy : IMovmentStrategy
     {
         public Plane lockTo;
-        public Vector2 bounds;
+        public float maxDist;
+        private float curDist;
         public SlideOnPlaneMovmentStrategy(Plane plane)
         {
             lockTo = plane;
         }
         public Vector2 MoveTo(EnemyAIController parent)
         {
+            
             if (parent._target == null || parent._self == null) return new Vector2(0, 0);
             Vector3 movePos = parent._target._position - parent._self._position;
+            
 
             if (movePos.Magnitude() > parent._searchDistance) return new Vector2(0, 0);
-
-            switch(lockTo)
+            
+            Vector2 pos = new Vector2(0, 0);
+            switch (lockTo)
             {
-                case Plane.xy: return Vector2.Normal(new Vector2(movePos.x, 0));
-                case Plane.yz: return Vector2.Normal(new Vector2(0, movePos.y));
+                case Plane.xy:
+                    pos = Vector2.Normal(new Vector2(movePos.x, 0));
+                    curDist += (float)pos.x;
+                
+                    if (curDist > maxDist || curDist < -maxDist) return new Vector2(0, 0);
+                    break;
+
+                case Plane.yz:
+                    pos = Vector2.Normal(new Vector2(0, movePos.z));
+                    curDist += (float)pos.y;
+                    if (curDist > maxDist || curDist < -maxDist) return new Vector2(0, 0);
+                    break;
             }
-            return Vector2.Normal(new Vector2(movePos.x, movePos.z));
+            Debug.WriteLine(curDist);
+            return pos;
         }
     }
 

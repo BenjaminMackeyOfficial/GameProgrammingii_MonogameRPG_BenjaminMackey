@@ -118,6 +118,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
                     ));
                 //-----------------------------------------------------------------------------------
             }
+            moveQue.Clear();
         }
 
         public static void QuePhysicsTransformAdjustment(GameObject obj, Transform current, Transform attmeped)

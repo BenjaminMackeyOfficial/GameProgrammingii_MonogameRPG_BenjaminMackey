@@ -48,13 +48,19 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             //texture = Content.Load<Texture2D>("blackSquare");
             // TODO: use this.Content to load your game content here
-            SpriteBin.Add(Content.Load<Texture2D>("solidBlackSquare"), "blockade");
+            SpriteBin.Add(Content.Load<Texture2D>("solidBlackSquare"), "solidBlackSquare");
             //SpriteBin.Add(Content.Load<Texture2D>("blackSquare"), "seeThroughBlackSquare");
-            //SpriteBin.Add(Content.Load<Texture2D>("blueSquare"), "blueSquare");
+            SpriteBin.Add(Content.Load<Texture2D>("blueSquare"), "blueSquare");
             SpriteBin.Add(Content.Load<Texture2D>("pylon"), "pylon");
             SpriteBin.Add(Content.Load<Texture2D>("Leoreo"), "Leoreo");
             SpriteBin.Add(Content.Load<Texture2D>("TempCar"), "TempCar");
             SpriteBin.Add(Content.Load<Texture2D>("eplodedCar"), "eplodedCar");
+            SpriteBin.Add(Content.Load<Texture2D>("nos"), "nos");
+            SpriteBin.Add(Content.Load<Texture2D>("Bomb"), "bomb");
+            SpriteBin.Add(Content.Load<Texture2D>("ghost"), "ghost");
+            SpriteBin.Add(Content.Load<Texture2D>("shield"), "shield");
+            SpriteBin.Add(Content.Load<Texture2D>("stop"), "stop");
+            SpriteBin.Add(Content.Load<Texture2D>("heal"), "health");
 
 
             //--
