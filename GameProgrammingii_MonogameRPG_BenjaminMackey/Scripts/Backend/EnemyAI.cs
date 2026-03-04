@@ -13,6 +13,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
         public Transform _self;
 
         public float _searchDistance;
+        public float _speed;
         public IMovmentStrategy _movmentStrategy;
         public EnemyAIController(bool empty) : base(empty)
         {
@@ -47,4 +48,29 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Backend
             return Vector2.Normal(new Vector2(movePos.x, movePos.z));
         }
     }
+    public class SlideOnPlaneMovmentStrategy : IMovmentStrategy
+    {
+        public Plane lockTo;
+        public Vector2 bounds;
+        public SlideOnPlaneMovmentStrategy(Plane plane)
+        {
+            lockTo = plane;
+        }
+        public Vector2 MoveTo(EnemyAIController parent)
+        {
+            if (parent._target == null || parent._self == null) return new Vector2(0, 0);
+            Vector3 movePos = parent._target._position - parent._self._position;
+
+            if (movePos.Magnitude() > parent._searchDistance) return new Vector2(0, 0);
+
+            switch(lockTo)
+            {
+                case Plane.xy: return Vector2.Normal(new Vector2(movePos.x, 0));
+                case Plane.yz: return Vector2.Normal(new Vector2(0, movePos.y));
+            }
+            return Vector2.Normal(new Vector2(movePos.x, movePos.z));
+        }
+    }
+
+    
 }

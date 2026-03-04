@@ -18,8 +18,9 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
         private ButtonAction _boostKey;
         private ButtonAction _driftKey;
 
-
         
+
+
         private GameObject BuildFollowCam()
         {
             GameObject CameraObj = new GameObject();
@@ -60,6 +61,10 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             else queDamage = true;
 
         }
+        public void ForceTakeDamage(float dmg)
+        {
+            health -= dmg;
+        }
 
         private GameObject _map;
         public override void Initialize()
@@ -80,7 +85,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey
             _collider._static = false;
             _gameObject.AddComponent(_spriteRenderer);
 
-            _map.GetComponent<Map>().TellEnemiesHeyImOverHere(_gameObject);
+            //_map.GetComponent<Map>().TellEnemiesHeyImOverHere(_gameObject);
         }
         
 

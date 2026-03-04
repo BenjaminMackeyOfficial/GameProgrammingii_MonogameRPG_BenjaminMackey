@@ -81,8 +81,7 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
             enemy.AddComponent(transformController);
             enemy.AddComponent(sprite);
             enemy.AddComponent(collider);
-            return enemy;
-                
+            return enemy; 
         }
         private Vector2[] GetOtherDirections(Vector2[] directions)
         {
@@ -126,13 +125,19 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
             if(dir1 == -dir2 && rand.Next(0,10) < _enemySpawnRate)
             {
                 Vector3 pos = new Vector3(currentTilePos.x * _scale, 0, currentTilePos.y * _scale);
-                _enemies.Add(SpawnEnemy(pos));
+
+                Vector3 scale = new Vector3(500, 501, 501);
+                if (dir1.y != 0)
+                {
+                    scale = new Vector3(501, 501, 500);
+                }
+                EnemyManager.Instance.CreateBlockade(pos, scale);
             }
             //-----------------------
 
             for (int i = 0; i <2; i++)
             {
-                Debug.WriteLine(wallDirections[i].x + " " +wallDirections[i].y);
+                //Debug.WriteLine(wallDirections[i].x + " " +wallDirections[i].y);
 
                 Vector2 wallPosition = (currentTilePos * _scale) + (wallDirections[i] * ((float)_scale / 2f));
                 Vector3 vec3WallPos = new Vector3(wallPosition.x, 0, wallPosition.y);
@@ -180,8 +185,8 @@ namespace GameProgrammingii_MonogameRPG_BenjaminMackey.Scripts.Adjustable
             newFocus = new Vector2(curentFocus.x + 1, curentFocus.y);
             lastFocus = new Vector2(curentFocus.x - 1, curentFocus.y);
             BuildTile(curentFocus, lastFocus, newFocus);
-            
 
+            EnemyInfoBin._player._transform._position = new Vector3(curentFocus.x, 0, curentFocus.y) * _scale;
 
             int counter = 0;
             while (true)
